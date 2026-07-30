@@ -1,4 +1,5 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { type ComponentProps } from 'react';
 import { Image, ImageBackground, Pressable, ScrollView, StyleSheet, View } from 'react-native';
@@ -12,14 +13,17 @@ function HomeActionButton({
   label,
   icon,
   variant = 'soft',
+  onPress,
 }: {
   label: string;
   icon: IconName;
   variant?: 'primary' | 'soft';
+  onPress?: () => void;
 }) {
   return (
     <Pressable
       accessibilityRole="button"
+      onPress={onPress}
       style={({ pressed }) => [
         styles.actionButton,
         variant === 'primary' ? styles.actionPrimary : styles.actionSoft,
@@ -91,7 +95,7 @@ export default function HomeScreen() {
           </View>
 
           <View style={styles.actions}>
-            <HomeActionButton label="Login" icon="leaf" variant="primary" />
+            <HomeActionButton label="Login" icon="leaf" variant="primary" onPress={() => router.push('/login')} />
             <HomeActionButton label="Register" icon="account-plus-outline" />
             <HomeActionButton label="Learn About System" icon="information-outline" />
           </View>
@@ -143,18 +147,18 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   logoImage: {
-    width: 100,
-    height: 100,
+    width: 150,
+    height: 150,
   },
   welcomeText: {
-    color: '#448136',
+    color: '#1C6A2F',
     fontSize: 20,
     lineHeight: 25,
     textAlign: 'center',
     marginTop: 12,
   },
   brandText: {
-    color: '#246532',
+    color: '#1C6A2F',
     fontSize: 40,
     lineHeight: 36,
     fontWeight: '800',
