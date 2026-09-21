@@ -159,8 +159,8 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
   },
   logoImage: {
-    width: 150,
-    height: 150,
+    width: 250,
+    height: 250,
     marginTop: 25,
     marginBottom: 28,
   },
