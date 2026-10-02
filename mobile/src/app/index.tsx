@@ -96,7 +96,11 @@ export default function HomeScreen() {
 
           <View style={styles.actions}>
             <HomeActionButton label="Login" icon="leaf" variant="primary" onPress={() => router.push('/login')} />
-            <HomeActionButton label="Register" icon="account-plus-outline" />
+            <HomeActionButton
+              label="Register"
+              icon="account-plus-outline"
+              onPress={() => router.push('/register')}
+            />
             <HomeActionButton label="Learn About System" icon="information-outline" />
           </View>
 
