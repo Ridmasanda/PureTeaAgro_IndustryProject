@@ -147,8 +147,8 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   logoImage: {
-    width: 150,
-    height: 150,
+    width: 250,
+    height: 250,
   },
   welcomeText: {
     color: '#1C6A2F',
