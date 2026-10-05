@@ -98,7 +98,12 @@ export default function RegisterScreen() {
                   accessibilityLabel={`Select ${role.title}`}
                   accessibilityRole="button"
                   key={role.title}
-                  onPress={() => setSelectedRole(role.title)}
+                  onPress={() => {
+                    setSelectedRole(role.title);
+                    if (role.title === 'Farmer') {
+                      router.push('/farmer-registration');
+                    }
+                  }}
                   style={({ pressed }) => [
                     styles.roleCard,
                     isSelected && styles.roleCardSelected,
