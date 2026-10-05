@@ -3,12 +3,12 @@ import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
 import {
-    Image,
-    ImageBackground,
-    Pressable,
-    StyleSheet,
-    TextInput,
-    View,
+  Image,
+  ImageBackground,
+  Pressable,
+  StyleSheet,
+  TextInput,
+  View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -95,7 +95,10 @@ export default function LoginScreen() {
               </ThemedText>
             </Pressable>
 
-            <Pressable accessibilityRole="button" style={({ pressed }) => [styles.loginButton, pressed && styles.loginPressed]}>
+            <Pressable
+              accessibilityRole="button"
+              onPress={() => router.replace('/farmer-dashboard')}
+              style={({ pressed }) => [styles.loginButton, pressed && styles.loginPressed]}>
               <MaterialCommunityIcons name="login" size={22} color="#F8FFF6" />
               <ThemedText type="smallBold" style={styles.loginText}>
                 Login
