@@ -52,14 +52,14 @@ export default function FarmerDashboardScreen() {
           <View style={styles.statsGrid}>{stats.map((stat) => <DashboardCard key={stat.label} {...stat} />)}</View>
 
           <ThemedText type="smallBold" style={styles.sectionTitle}>Quick Actions</ThemedText>
-          <View style={styles.actionsGrid}>{actions.map((action) => <Pressable key={action.label} accessibilityRole="button" style={({ pressed }) => [styles.actionCard, pressed && styles.pressed]}><View style={[styles.actionIcon, styles[`${action.tone}Icon` as keyof typeof styles] as object]}><MaterialCommunityIcons name={action.icon} size={21} color="#FFF" /></View><ThemedText type="smallBold" style={styles.actionText}>{action.label}</ThemedText><MaterialCommunityIcons name="chevron-right" size={19} color="#39785B" /></Pressable>)}</View>
+          <View style={styles.actionsGrid}>{actions.map((action) => <Pressable key={action.label} accessibilityRole="button" onPress={action.label.startsWith('Add Agrochemical') || action.label.startsWith('View Approved') ? () => router.push('/agrochemicals') : undefined} style={({ pressed }) => [styles.actionCard, pressed && styles.pressed]}><View style={[styles.actionIcon, styles[`${action.tone}Icon` as keyof typeof styles] as object]}><MaterialCommunityIcons name={action.icon} size={21} color="#FFF" /></View><ThemedText type="smallBold" style={styles.actionText}>{action.label}</ThemedText><MaterialCommunityIcons name="chevron-right" size={19} color="#39785B" /></Pressable>)}</View>
 
           <View style={styles.complianceCard}><View style={styles.bellCircle}><MaterialCommunityIcons name="bell-outline" size={22} color="#AD7A00" /></View><View style={styles.complianceText}><ThemedText type="smallBold" style={styles.complianceTitle}>Smart Compliance Summary</ThemedText><ThemedText type="small" style={styles.complianceCaption}>Your registered tea lands have 2 upcoming compliance reminders.</ThemedText></View><Pressable accessibilityRole="button"><ThemedText type="smallBold" style={styles.detailsText}>View Details</ThemedText><MaterialCommunityIcons name="chevron-right" size={16} color="#926A00" /></Pressable></View>
 
           <ThemedText type="smallBold" style={styles.sectionTitle}>Recent Activity</ThemedText>
           <View style={styles.activityCard}><Activity icon="flask-outline" title="Agrochemical record submitted" detail="Product A • Green Valley Land" time="2 hours ago" tone="green" /><Activity icon="check-circle-outline" title="Inspection completed" detail="Green Valley Land • Compliant" time="1 day ago" tone="blue" /><Activity icon="bell-outline" title="New approved chemical information" detail="Product B is now available" time="2 days ago" tone="yellow" /></View>
         </ScrollView>
-        <View style={styles.bottomNav}><NavItem icon="home" label="Home" active /><NavItem icon="map-outline" label="My Lands" /><NavItem icon="flask-outline" label="Agrochemicals" /><NavItem icon="bell-outline" label="Notifications" /><NavItem icon="account-outline" label="Profile" /></View>
+        <View style={styles.bottomNav}><NavItem icon="home" label="Home" active /><NavItem icon="map-outline" label="My Lands" /><NavItem icon="flask-outline" label="Agrochemicals" onPress={() => router.push('/agrochemicals')} /><NavItem icon="bell-outline" label="Notifications" /><NavItem icon="account-outline" label="Profile" /></View>
       </SafeAreaView>
     </View>
   );
@@ -73,8 +73,8 @@ function Activity({ icon, title, detail, time, tone }: { icon: IconName; title: 
   return <View style={styles.activityRow}><View style={[styles.activityIcon, styles[`${tone}Icon` as keyof typeof styles] as object]}><MaterialCommunityIcons name={icon} size={18} color="#FFF" /></View><View style={styles.activityText}><ThemedText type="smallBold" style={styles.activityTitle}>{title}</ThemedText><ThemedText type="small" style={styles.activityDetail}>{detail}</ThemedText></View><ThemedText type="small" style={styles.activityTime}>{time}</ThemedText><MaterialCommunityIcons name="chevron-right" size={18} color="#39785B" /></View>;
 }
 
-function NavItem({ icon, label, active }: { icon: IconName; label: string; active?: boolean }) {
-  return <Pressable accessibilityRole="button" onPress={active ? () => router.replace('/farmer-dashboard') : undefined} style={styles.navItem}><MaterialCommunityIcons name={icon} size={22} color={active ? '#168B3E' : '#58776A'} /><ThemedText type="small" style={[styles.navLabel, active && styles.navLabelActive]}>{label}</ThemedText>{active && <View style={styles.navIndicator} />}</Pressable>;
+function NavItem({ icon, label, active, onPress }: { icon: IconName; label: string; active?: boolean; onPress?: () => void }) {
+  return <Pressable accessibilityRole="button" onPress={onPress ?? (active ? () => router.replace('/farmer-dashboard') : undefined)} style={styles.navItem}><MaterialCommunityIcons name={icon} size={22} color={active ? '#168B3E' : '#58776A'} /><ThemedText type="small" style={[styles.navLabel, active && styles.navLabelActive]}>{label}</ThemedText>{active && <View style={styles.navIndicator} />}</Pressable>;
 }
 
 const styles = StyleSheet.create({
