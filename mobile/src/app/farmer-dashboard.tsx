@@ -44,11 +44,11 @@ export default function FarmerDashboardScreen() {
           <ThemedText type="subtitle" style={styles.name}>Saman Kumara <ThemedText style={styles.wave}>👋</ThemedText></ThemedText>
           <ThemedText type="small" style={styles.role}>Farmer  •  FRM-00124</ThemedText>
 
-          <View style={styles.profileCard}>
+          <Pressable accessibilityRole="button" onPress={() => router.push('/farmer-profile')} style={({ pressed }) => [styles.profileCard, pressed && styles.pressed]}>
             <View style={styles.profileIcon}><MaterialCommunityIcons name="leaf" size={29} color="#168B3E" /></View>
             <View style={styles.profileDetails}><ThemedText type="smallBold" style={styles.cardTitle}>Farmer Profile</ThemedText><View style={styles.badge}><ThemedText type="smallBold" style={styles.badgeText}>Small Sector</ThemedText></View><ThemedText type="small" style={styles.cardCaption}>Total Tea Land: <ThemedText type="smallBold" style={styles.cardValue}>6.5 hectares</ThemedText></ThemedText></View>
             <MaterialCommunityIcons name="chevron-right" size={23} color="#39785B" />
-          </View>
+          </Pressable>
 
           <View style={styles.statsGrid}>{stats.map((stat) => <DashboardCard key={stat.label} {...stat} />)}</View>
 
@@ -60,7 +60,7 @@ export default function FarmerDashboardScreen() {
           <ThemedText type="smallBold" style={styles.sectionTitle}>Recent Activity</ThemedText>
           <View style={styles.activityCard}><Activity icon="flask-outline" title="Agrochemical record submitted" detail="Product A • Green Valley Land" time="2 hours ago" tone="green" /><Activity icon="check-circle-outline" title="Inspection completed" detail="Green Valley Land • Compliant" time="1 day ago" tone="blue" /><Activity icon="bell-outline" title="New approved chemical information" detail="Product B is now available" time="2 days ago" tone="yellow" /></View>
         </ScrollView>
-        <View style={styles.bottomNav}><NavItem icon="home" label="Home" active /><NavItem icon="map-outline" label="My Lands" /><NavItem icon="flask-outline" label="Agrochemicals" onPress={() => router.push('/agrochemicals')} /><NavItem icon="bell-outline" label="Notifications" /><NavItem icon="account-outline" label="Profile" /></View>
+        <View style={styles.bottomNav}><NavItem icon="home" label="Home" active /><NavItem icon="map-outline" label="My Lands" /><NavItem icon="flask-outline" label="Agrochemicals" onPress={() => router.push('/agrochemicals')} /><NavItem icon="bell-outline" label="Notifications" /><NavItem icon="account-outline" label="Profile" onPress={() => router.push('/farmer-profile')} /></View>
       </SafeAreaView>
     </ImageBackground>
   );
