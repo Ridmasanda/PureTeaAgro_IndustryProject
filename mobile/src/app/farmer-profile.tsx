@@ -65,7 +65,7 @@ export default function FarmerProfileScreen() {
           </View>
 
           <View style={styles.actionCard}>
-            {profileActions.map(([icon, label]) => <Pressable key={label} accessibilityRole="button" onPress={() => undefined} style={({ pressed }) => [styles.actionRow, pressed && styles.pressed]}><MaterialCommunityIcons name={icon} size={18} color="#168B3E" /><ThemedText type="small" style={styles.actionLabel}>{label}</ThemedText><MaterialCommunityIcons name="chevron-right" size={18} color="#39785B" /></Pressable>)}
+            {profileActions.map(([icon, label]) => <Pressable key={label} accessibilityRole="button" onPress={label === 'Settings' ? () => router.push('/settings') : undefined} style={({ pressed }) => [styles.actionRow, pressed && styles.pressed]}><MaterialCommunityIcons name={icon} size={18} color="#168B3E" /><ThemedText type="small" style={styles.actionLabel}>{label}</ThemedText><MaterialCommunityIcons name="chevron-right" size={18} color="#39785B" /></Pressable>)}
           </View>
 
           <Pressable accessibilityRole="button" onPress={() => router.replace('/')} style={({ pressed }) => [styles.logout, pressed && styles.pressed]}><MaterialCommunityIcons name="logout" size={19} color="#D52C2C" /><ThemedText type="smallBold" style={styles.logoutText}>Logout</ThemedText></Pressable>
