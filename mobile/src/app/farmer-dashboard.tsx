@@ -35,7 +35,7 @@ export default function FarmerDashboardScreen() {
               <ThemedText type="smallBold" style={styles.brand}>PureTeaAgro</ThemedText>
             </View>
             <View style={styles.topActions}>
-              <Pressable accessibilityLabel="Notifications" style={styles.iconButton}><MaterialCommunityIcons name="bell-outline" size={22} color="#215C3A" /></Pressable>
+              <Pressable accessibilityLabel="Notifications" onPress={() => router.push('/notifications')} style={styles.iconButton}><MaterialCommunityIcons name="bell-outline" size={22} color="#215C3A" /></Pressable>
               <View style={styles.avatar}><MaterialCommunityIcons name="account" size={27} color="#2A994B" /></View>
             </View>
           </View>
@@ -62,7 +62,7 @@ export default function FarmerDashboardScreen() {
           <ThemedText type="smallBold" style={styles.sectionTitle}>Recent Activity</ThemedText>
           <View style={styles.activityCard}><Activity icon="flask-outline" title="Agrochemical record submitted" detail="Product A • Green Valley Land" time="2 hours ago" tone="green" /><Activity icon="check-circle-outline" title="Inspection completed" detail="Green Valley Land • Compliant" time="1 day ago" tone="blue" /><Activity icon="bell-outline" title="New approved chemical information" detail="Product B is now available" time="2 days ago" tone="yellow" /></View>
         </ScrollView>
-        <View style={styles.bottomNav}><NavItem icon="home" label="Home" active /><NavItem icon="map-outline" label="My Lands" /><NavItem icon="flask-outline" label="Agrochemicals" onPress={() => router.push('/agrochemicals')} /><NavItem icon="bell-outline" label="Notifications" /><NavItem icon="account-outline" label="Profile" onPress={() => router.push('/farmer-profile')} /></View>
+        <View style={styles.bottomNav}><NavItem icon="home" label="Home" active /><NavItem icon="map-outline" label="My Lands" /><NavItem icon="flask-outline" label="Agrochemicals" onPress={() => router.push('/agrochemicals')} /><NavItem icon="bell-outline" label="Notifications" onPress={() => router.push('/notifications')} /><NavItem icon="account-outline" label="Profile" onPress={() => router.push('/farmer-profile')} /></View>
       </SafeAreaView>
     </ImageBackground>
   );
