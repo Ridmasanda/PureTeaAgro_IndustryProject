@@ -21,6 +21,7 @@ const profileActions: [IconName, string][] = [
   ['map-outline', 'View Registered Lands'],
   ['map-marker-radius-outline', 'View Land Category Information'],
   ['lock-outline', 'Change Password'],
+  ['cog-outline', 'Settings'],
 ];
 
 export default function FarmerProfileScreen() {
