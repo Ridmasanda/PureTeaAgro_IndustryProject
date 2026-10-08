@@ -6,6 +6,7 @@ import {
   Pressable,
   ScrollView,
   StyleSheet,
+  ImageBackground,
   TextInput,
   View,
 } from 'react-native';
@@ -48,8 +49,9 @@ export default function AgrochemicalsScreen() {
   }
 
   return (
-    <View style={styles.container}>
+    <ImageBackground source={require('@/assets/images/background.png')} resizeMode="cover" style={styles.container}>
       <StatusBar style="dark" />
+      <View pointerEvents="none" style={styles.backgroundOverlay} />
       <SafeAreaView style={styles.safeArea}>
         <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
           <Header title="Agrochemical Overview" />
@@ -72,7 +74,7 @@ export default function AgrochemicalsScreen() {
         </ScrollView>
         <BottomNav active="Agrochemicals" />
       </SafeAreaView>
-    </View>
+    </ImageBackground>
   );
 }
 
@@ -119,13 +121,14 @@ function RecordFlow({
   quantity: string; setQuantity: (value: string) => void; date: string; setDate: (value: string) => void; onBack: () => void; onNext: () => void; submitted: boolean; onClose: () => void;
 }) {
   if (submitted) {
-    return <View style={styles.container}><SafeAreaView style={styles.success}><MaterialCommunityIcons name="check-circle" size={72} color={green} /><ThemedText type="subtitle" style={styles.successTitle}>Record Submitted</ThemedText><ThemedText type="small" style={styles.successText}>Your agrochemical application was submitted for verification.</ThemedText><Pressable onPress={onClose} style={styles.primaryButton}><ThemedText type="smallBold" style={styles.primaryButtonText}>Back to Overview</ThemedText></Pressable></SafeAreaView></View>;
+    return <ImageBackground source={require('@/assets/images/background.png')} resizeMode="cover" style={styles.container}><View pointerEvents="none" style={styles.backgroundOverlay} /><SafeAreaView style={styles.success}><MaterialCommunityIcons name="check-circle" size={72} color={green} /><ThemedText type="subtitle" style={styles.successTitle}>Record Submitted</ThemedText><ThemedText type="small" style={styles.successText}>Your agrochemical application was submitted for verification.</ThemedText><Pressable onPress={onClose} style={styles.primaryButton}><ThemedText type="smallBold" style={styles.primaryButtonText}>Back to Overview</ThemedText></Pressable></SafeAreaView></ImageBackground>;
   }
 
   const titles: Record<Step, string> = { 0: 'Select Tea Land', 1: 'Select Agrochemical', 2: 'Enter Quantity', 3: 'Application Date', 4: 'Additional Details', 5: 'Review & Submit' };
   return (
-    <View style={styles.container}>
+    <ImageBackground source={require('@/assets/images/background.png')} resizeMode="cover" style={styles.container}>
       <StatusBar style="dark" />
+      <View pointerEvents="none" style={styles.backgroundOverlay} />
       <SafeAreaView style={styles.safeArea}>
         <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
           <Header title={titles[step]} onBack={onBack} />
@@ -143,7 +146,7 @@ function RecordFlow({
           {step > 0 && <Pressable onPress={onBack} style={styles.backLink}><ThemedText type="small" style={styles.backLinkText}>Back</ThemedText></Pressable>}
         </ScrollView>
       </SafeAreaView>
-    </View>
+    </ImageBackground>
   );
 }
 
@@ -190,6 +193,7 @@ function BottomNav({ active }: { active: string }) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F5FCF7' },
+  backgroundOverlay: { ...StyleSheet.absoluteFill, backgroundColor: '#F7FFF8', opacity: 0.58 },
   safeArea: { flex: 1 },
   content: { paddingHorizontal: 14, paddingBottom: 28 },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 },
