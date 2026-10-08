@@ -37,7 +37,8 @@ export default function NotificationsScreen() {
         </ScrollView>
         <View style={styles.bottomNav}>
           <NavItem icon="home-outline" label="Home" onPress={() => router.replace('/farmer-dashboard')} />
-          <NavItem icon="history" label="History" onPress={() => router.push('/inspection-status')} />
+          <NavItem icon="map-outline" label="My Lands" onPress={() => router.push('/my-tea-lands')} />
+          <NavItem icon="flask-outline" label="Agrochemicals" onPress={() => router.push('/agrochemicals')} />
           <NavItem icon="bell" label="Notifications" active />
           <NavItem icon="account-outline" label="Profile" onPress={() => router.push('/farmer-profile')} />
         </View>
