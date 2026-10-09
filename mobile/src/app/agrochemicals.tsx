@@ -22,11 +22,21 @@ const paleGreen = '#E9F8EC';
 
 export default function AgrochemicalsScreen() {
   const [step, setStep] = useState<Step | null>(null);
+  const [showHistory, setShowHistory] = useState(false);
+  const [showApproved, setShowApproved] = useState(false);
   const [land, setLand] = useState('Green Valley Tea Land');
   const [chemicalType, setChemicalType] = useState<'Fertilizer' | 'Pesticide'>('Fertilizer');
   const [quantity, setQuantity] = useState('5');
   const [date, setDate] = useState('19 Sep 2026');
   const [submitted, setSubmitted] = useState(false);
+
+  if (showHistory) {
+    return <ApplicationHistory onBack={() => setShowHistory(false)} />;
+  }
+
+  if (showApproved) {
+    return <ApprovedChemicals onBack={() => setShowApproved(false)} />;
+  }
 
   if (step !== null) {
     return (
@@ -62,8 +72,8 @@ export default function AgrochemicalsScreen() {
             <Stat icon="alert-circle" label="Compliance Alerts" value="0" alert />
           </View>
           <ActionButton icon="plus-circle" label="Record Agrochemical Usage" primary onPress={() => setStep(0)} />
-          <ActionButton icon="file-document-outline" label="View Application History" onPress={() => undefined} />
-          <ActionButton icon="sprout-outline" label="View Approved Agrochemicals" onPress={() => undefined} />
+          <ActionButton icon="file-document-outline" label="View Application History" onPress={() => setShowHistory(true)} />
+          <ActionButton icon="sprout-outline" label="View Approved Agrochemicals" onPress={() => setShowApproved(true)} />
           <View style={styles.tipCard}>
             <MaterialCommunityIcons name="shield-check-outline" size={24} color={green} />
             <View style={styles.tipCopy}>
@@ -75,6 +85,143 @@ export default function AgrochemicalsScreen() {
         <BottomNav active="Agrochemicals" />
       </SafeAreaView>
     </ImageBackground>
+  );
+}
+
+function ApplicationHistory({ onBack }: { onBack: () => void }) {
+  return (
+    <ImageBackground source={require('@/assets/images/background.png')} resizeMode="cover" style={styles.container}>
+      <StatusBar style="dark" />
+      <View pointerEvents="none" style={styles.backgroundOverlay} />
+      <SafeAreaView style={styles.safeArea}>
+        <ScrollView contentContainerStyle={styles.historyContent} showsVerticalScrollIndicator={false}>
+          <Header title="Application History" onBack={onBack} />
+          <View style={styles.filterGrid}>
+            <HistoryFilter label="Select Land" value="All Lands" />
+            <HistoryFilter label="Date Range" value="Last 3 Months" icon="calendar-month-outline" />
+            <HistoryFilter label="Chemical Type" value="All Types" />
+            <HistoryFilter label="Status" value="All Status" />
+          </View>
+          <ApplicationCard
+            title="Pesticide Application"
+            land="Green Valley Tea Land"
+            product="Product A"
+            quantity="2 L"
+            date="12 Sep 2026"
+            status="Verified"
+            statusStyle={styles.verifiedBadge}
+          />
+          <ApplicationCard
+            title="Fertilizer Application"
+            land="Hilltop Tea Land"
+            product="Product B"
+            quantity="5 kg"
+            date="05 Sep 2026"
+            status="Pending"
+            statusStyle={styles.pendingBadge}
+          />
+        </ScrollView>
+      </SafeAreaView>
+    </ImageBackground>
+  );
+}
+
+function ApprovedChemicals({ onBack }: { onBack: () => void }) {
+  const [search, setSearch] = useState('');
+  const [filter, setFilter] = useState<'All' | 'Pesticide' | 'Fertilizer'>('All');
+  const chemicals = [
+    { name: 'Product A', type: 'Pesticide', ingredient: 'Ingredient A', waiting: '15 days', icon: 'flask-round-bottom' as IconName },
+    { name: 'Fertilizer B', type: 'Fertilizer', ingredient: 'Ingredient B', waiting: '7 days', icon: 'flask' as IconName },
+    { name: 'Product C', type: 'Pesticide', ingredient: 'Ingredient C', waiting: '10 days', icon: 'flask-round-bottom' as IconName },
+  ];
+  const visibleChemicals = chemicals.filter((chemical) => {
+    const matchesFilter = filter === 'All' || chemical.type === filter;
+    const matchesSearch = `${chemical.name} ${chemical.ingredient}`.toLowerCase().includes(search.toLowerCase());
+    return matchesFilter && matchesSearch;
+  });
+
+  return (
+    <ImageBackground source={require('@/assets/images/background.png')} resizeMode="cover" style={styles.container}>
+      <StatusBar style="dark" />
+      <View pointerEvents="none" style={styles.backgroundOverlay} />
+      <SafeAreaView style={styles.safeArea}>
+        <ScrollView contentContainerStyle={styles.historyContent} showsVerticalScrollIndicator={false}>
+          <Header title="Approved Chemicals" onBack={onBack} />
+          <View style={styles.searchWrap}>
+            <MaterialCommunityIcons name="magnify" size={21} color="#527568" />
+            <TextInput value={search} onChangeText={setSearch} placeholder="Search chemical..." placeholderTextColor="#9AB4A6" style={styles.searchInput} />
+          </View>
+          <View style={styles.chemicalTabs}>
+            {(['All', 'Pesticide', 'Fertilizer'] as const).map((tab) => (
+              <Pressable key={tab} onPress={() => setFilter(tab)} style={[styles.chemicalTab, filter === tab && styles.chemicalTabActive]}>
+                <ThemedText type="smallBold" style={filter === tab ? styles.chemicalTabActiveText : styles.chemicalTabText}>{tab}</ThemedText>
+              </Pressable>
+            ))}
+          </View>
+          {visibleChemicals.map((chemical) => <ApprovedChemicalCard key={chemical.name} {...chemical} />)}
+          <View style={styles.restrictedNotice}>
+            <MaterialCommunityIcons name="alert" size={20} color="#E0443E" />
+            <ThemedText type="small" style={styles.restrictedNoticeText}>Restricted chemical not available</ThemedText>
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+    </ImageBackground>
+  );
+}
+
+function ApprovedChemicalCard({ name, type, ingredient, waiting, icon }: { name: string; type: string; ingredient: string; waiting: string; icon: IconName }) {
+  return (
+    <View style={styles.chemicalCard}>
+      <View style={styles.chemicalCardTop}>
+        <View style={styles.chemicalIcon}><MaterialCommunityIcons name={icon} size={27} color={green} /></View>
+        <View style={styles.chemicalCopy}>
+          <ThemedText type="smallBold" style={styles.chemicalName}>{name}</ThemedText>
+          <ThemedText type="smallBold" style={styles.chemicalType}>{type}</ThemedText>
+          <ThemedText type="small" style={styles.chemicalMeta}>Active Ingredient: {ingredient}</ThemedText>
+          <ThemedText type="small" style={styles.chemicalMeta}>Waiting Period: {waiting}</ThemedText>
+        </View>
+        <MaterialCommunityIcons name="chevron-right" size={22} color="#2E7950" />
+      </View>
+      <Pressable style={styles.chemicalDetails}><ThemedText type="smallBold" style={styles.chemicalDetailsText}>View Details</ThemedText></Pressable>
+    </View>
+  );
+}
+
+function HistoryFilter({ label, value, icon }: { label: string; value: string; icon?: IconName }) {
+  return (
+    <View style={styles.historyFilter}>
+      <ThemedText type="small" style={styles.historyFilterLabel}>{label}</ThemedText>
+      <View style={styles.historyFilterValue}>
+        {icon && <MaterialCommunityIcons name={icon} size={18} color="#527568" />}
+        <ThemedText type="small" style={styles.historyFilterText}>{value}</ThemedText>
+        <MaterialCommunityIcons name="chevron-down" size={18} color="#47745C" />
+      </View>
+    </View>
+  );
+}
+
+function ApplicationCard({
+  title, land, product, quantity, date, status, statusStyle,
+}: {
+  title: string; land: string; product: string; quantity: string; date: string; status: string; statusStyle: object;
+}) {
+  return (
+    <View style={styles.applicationCard}>
+      <View style={styles.applicationTop}>
+        <View style={styles.applicationIcon}><MaterialCommunityIcons name="flask-outline" size={23} color="#FFF" /></View>
+        <View style={styles.applicationCopy}>
+          <ThemedText type="smallBold" style={styles.applicationTitle}>{title}</ThemedText>
+          <ThemedText type="small" style={styles.applicationLand}>{land}</ThemedText>
+          <View style={styles.applicationInfo}><MaterialCommunityIcons name="flask-outline" size={14} color="#4B7962" /><ThemedText type="small" style={styles.applicationMeta}>{product}</ThemedText></View>
+          <View style={styles.applicationInfo}><MaterialCommunityIcons name="weight-kilogram" size={14} color="#4B7962" /><ThemedText type="small" style={styles.applicationMeta}>{quantity}</ThemedText><MaterialCommunityIcons name="calendar-month-outline" size={14} color="#4B7962" /><ThemedText type="small" style={styles.applicationMeta}>{date}</ThemedText></View>
+        </View>
+        <ThemedText type="smallBold" style={[styles.applicationStatus, statusStyle]}>{status}</ThemedText>
+      </View>
+      <View style={styles.applicationActions}>
+        <Pressable style={styles.historyAction}><ThemedText type="smallBold" style={styles.historyActionText}>View Details</ThemedText></Pressable>
+        <Pressable style={styles.historyAction}><ThemedText type="smallBold" style={styles.historyActionText}>Inspector Findings</ThemedText></Pressable>
+      </View>
+    </View>
   );
 }
 
@@ -196,6 +343,7 @@ const styles = StyleSheet.create({
   backgroundOverlay: { ...StyleSheet.absoluteFill, backgroundColor: '#F7FFF8', opacity: 0.58 },
   safeArea: { flex: 1 },
   content: { paddingHorizontal: 14, paddingBottom: 28 },
+  historyContent: { paddingHorizontal: 14, paddingBottom: 28 },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 },
   backButton: { width: 34, height: 34, justifyContent: 'center' },
   headerTitle: { color: '#173F25', fontSize: 16 },
@@ -247,6 +395,43 @@ const styles = StyleSheet.create({
   primaryButtonText: { color: '#FFF' },
   backLink: { alignSelf: 'center', padding: 12 },
   backLinkText: { color: '#467260' },
+  searchWrap: { minHeight: 40, borderWidth: 1, borderColor: '#CFE5D5', borderRadius: 10, backgroundColor: '#FAFFFB', flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10, gap: 7, marginBottom: 10 },
+  searchInput: { flex: 1, color: '#244B39', fontSize: 13, paddingVertical: 8 },
+  chemicalTabs: { flexDirection: 'row', gap: 10, marginBottom: 16 },
+  chemicalTab: { flex: 1, minHeight: 36, borderWidth: 1, borderColor: '#D1E6D7', borderRadius: 9, alignItems: 'center', justifyContent: 'center', backgroundColor: '#FAFFFB' },
+  chemicalTabActive: { backgroundColor: green, borderColor: green },
+  chemicalTabText: { color: '#527568', fontSize: 12 },
+  chemicalTabActiveText: { color: '#FFF', fontSize: 12 },
+  chemicalCard: { borderWidth: 1, borderColor: '#CFE8D5', borderRadius: 13, backgroundColor: '#F8FFF9', marginBottom: 10, overflow: 'hidden' },
+  chemicalCardTop: { flexDirection: 'row', alignItems: 'flex-start', gap: 10, padding: 12 },
+  chemicalIcon: { width: 42, height: 42, borderRadius: 22, backgroundColor: '#DDF6E2', alignItems: 'center', justifyContent: 'center' },
+  chemicalCopy: { flex: 1, gap: 3 },
+  chemicalName: { color: '#164B32' },
+  chemicalType: { alignSelf: 'flex-start', color: '#147A2D', backgroundColor: '#BDF4B8', borderRadius: 10, paddingHorizontal: 8, paddingVertical: 2, fontSize: 10 },
+  chemicalMeta: { color: '#4B7962', fontSize: 11 },
+  chemicalDetails: { minHeight: 30, alignItems: 'center', justifyContent: 'center', backgroundColor: '#E4F9E5' },
+  chemicalDetailsText: { color: '#2E7950', fontSize: 11 },
+  restrictedNotice: { minHeight: 38, borderWidth: 1, borderColor: '#F1A8A3', borderRadius: 9, backgroundColor: '#FFF8F7', flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, gap: 8, marginTop: 0 },
+  restrictedNoticeText: { color: '#B34B45', fontSize: 12 },
+  filterGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginBottom: 18 },
+  historyFilter: { width: '48%', gap: 5 },
+  historyFilterLabel: { color: '#527568', fontSize: 12 },
+  historyFilterValue: { minHeight: 40, borderWidth: 1, borderColor: '#CFE5D5', borderRadius: 9, backgroundColor: '#FAFFFB', flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10, gap: 6 },
+  historyFilterText: { color: '#3A6652', flex: 1, fontSize: 12 },
+  applicationCard: { borderWidth: 1, borderColor: '#CFE8D5', borderRadius: 13, backgroundColor: '#F8FFF9', padding: 12, marginBottom: 10 },
+  applicationTop: { flexDirection: 'row', alignItems: 'flex-start', gap: 10 },
+  applicationIcon: { width: 39, height: 39, borderRadius: 21, backgroundColor: green, alignItems: 'center', justifyContent: 'center' },
+  applicationCopy: { flex: 1, gap: 3 },
+  applicationTitle: { color: '#164B32' },
+  applicationLand: { color: '#5C806E' },
+  applicationInfo: { flexDirection: 'row', alignItems: 'center', gap: 5 },
+  applicationMeta: { color: '#4B7962', fontSize: 11, marginRight: 7 },
+  applicationStatus: { borderRadius: 12, paddingHorizontal: 10, paddingVertical: 4, overflow: 'hidden' },
+  verifiedBadge: { color: '#147A2D', backgroundColor: '#BDF4B8' },
+  pendingBadge: { color: '#8A6500', backgroundColor: '#FFE68A' },
+  applicationActions: { flexDirection: 'row', gap: 10, marginTop: 10 },
+  historyAction: { flex: 1, minHeight: 32, borderWidth: 1, borderColor: '#BCE6C5', borderRadius: 9, alignItems: 'center', justifyContent: 'center', backgroundColor: '#F4FFF5' },
+  historyActionText: { color: '#2E7950', fontSize: 11 },
   success: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 30 },
   successTitle: { color: '#173F25', textAlign: 'center', marginTop: 16 },
   successText: { color: '#597467', textAlign: 'center', marginTop: 8, marginBottom: 26 },
