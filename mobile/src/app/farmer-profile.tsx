@@ -1,7 +1,7 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { ImageBackground, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Image, ImageBackground, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
@@ -36,7 +36,7 @@ export default function FarmerProfileScreen() {
               <MaterialCommunityIcons name="arrow-left" size={23} color="#173F25" />
             </Pressable>
             <View style={styles.brandRow}>
-              <MaterialCommunityIcons name="leaf" size={22} color="#168B3E" />
+              <Image source={require('@/assets/images/icon.png')} style={styles.brandLogo} resizeMode="contain" />
               <ThemedText type="smallBold" style={styles.brand}>PureTeaAgro</ThemedText>
             </View>
             <View style={styles.headerSpace} />
@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
   overlay: { ...StyleSheet.absoluteFill, backgroundColor: '#F7FFF8', opacity: 0.62 },
   safeArea: { flex: 1 },
   content: { paddingHorizontal: 14, paddingBottom: 18 },
-  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 },
+  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }, brandLogo: { width: 34, height: 34 },
   backButton: { width: 36, height: 36, borderRadius: 18, backgroundColor: '#E9F7EC', alignItems: 'center', justifyContent: 'center' },
   brandRow: { flexDirection: 'row', alignItems: 'center', gap: 5 },
   brand: { color: '#19833A', fontSize: 15 },

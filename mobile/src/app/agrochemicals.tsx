@@ -7,6 +7,7 @@ import {
   ScrollView,
   StyleSheet,
   ImageBackground,
+  Image,
   TextInput,
   View,
 } from 'react-native';
@@ -232,7 +233,7 @@ function Header({ title, onBack }: { title: string; onBack?: () => void }) {
         <MaterialCommunityIcons name="arrow-left" size={23} color="#173F25" />
       </Pressable>
       <ThemedText type="smallBold" style={styles.headerTitle}>{title}</ThemedText>
-      <MaterialCommunityIcons name="leaf" size={24} color={green} />
+      <Image source={require('@/assets/images/icon.png')} style={styles.headerLogo} resizeMode="contain" />
     </View>
   );
 }
@@ -347,6 +348,7 @@ const styles = StyleSheet.create({
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 },
   backButton: { width: 34, height: 34, justifyContent: 'center' },
   headerTitle: { color: '#173F25', fontSize: 17 },
+  headerLogo: { width: 34, height: 34 },
   statsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 8 },
   stat: { width: '48%', minHeight: 76, borderWidth: 1, borderColor: '#CFE8D5', borderRadius: 14, backgroundColor: '#FBFFFC', padding: 10, flexDirection: 'row', alignItems: 'center', gap: 8 },
   statIcon: { width: 32, height: 32, borderRadius: 17, backgroundColor: '#DDF6E2', justifyContent: 'center', alignItems: 'center' },

@@ -1,7 +1,7 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { ImageBackground, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Image, ImageBackground, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
@@ -29,7 +29,7 @@ export default function NotificationsScreen() {
               <MaterialCommunityIcons name="arrow-left" size={23} color="#173F25" />
             </Pressable>
             <ThemedText type="smallBold" style={styles.title}>Notifications</ThemedText>
-            <MaterialCommunityIcons name="leaf" size={24} color="#168B3E" />
+            <Image source={require('@/assets/images/icon.png')} style={styles.headerLogo} resizeMode="contain" />
           </View>
           <View style={styles.notificationList}>
             {notifications.map((notification) => <NotificationRow key={notification.title} {...notification} />)}
@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
   content: { paddingHorizontal: 14, paddingBottom: 18 },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 },
   backButton: { width: 36, height: 36, borderRadius: 18, backgroundColor: '#E9F7EC', alignItems: 'center', justifyContent: 'center' },
-  title: { color: '#173F25', fontSize: 18 },
+  title: { color: '#173F25', fontSize: 18 }, headerLogo: { width: 34, height: 34 },
   notificationList: { gap: 10 },
   notificationRow: { minHeight: 82, paddingHorizontal: 13, paddingVertical: 10, borderRadius: 14, borderWidth: 1, borderColor: '#D4E9D9', backgroundColor: 'rgba(255,255,255,0.9)', flexDirection: 'row', alignItems: 'center', gap: 11 },
   notificationIcon: { width: 42, height: 42, borderRadius: 22, alignItems: 'center', justifyContent: 'center' },
