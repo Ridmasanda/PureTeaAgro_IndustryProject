@@ -335,8 +335,14 @@ function Upload({ label }: { label: string }) {
 }
 
 function BottomNav({ active }: { active: string }) {
-  const items: [IconName, string][] = [['home', 'Home'], ['map-outline', 'My Lands'], ['flask-outline', 'Agrochemicals'], ['bell-outline', 'Notifications'], ['account-outline', 'Profile']];
-  return <View style={styles.bottomNav}>{items.map(([icon, label]) => <Pressable key={label} onPress={label === 'Home' ? () => router.replace('/farmer-dashboard') : undefined} style={styles.navItem}><MaterialCommunityIcons name={icon} size={21} color={label === active ? green : '#58776A'} /><ThemedText type="small" style={[styles.navLabel, label === active && styles.navLabelActive]}>{label}</ThemedText></Pressable>)}</View>;
+  const items: [IconName, string, () => void][] = [
+    ['home', 'Home', () => router.replace('/farmer-dashboard')],
+    ['map-outline', 'My Lands', () => router.push('/farmer-my-tea-lands')],
+    ['flask-outline', 'Agrochemicals', () => router.push('/farmer-agrochemicals')],
+    ['bell-outline', 'Notifications', () => router.push('/farmer-notification')],
+    ['account-outline', 'Profile', () => router.push('/farmer-profile')],
+  ];
+  return <View style={styles.bottomNav}>{items.map(([icon, label, onPress]) => <Pressable key={label} onPress={onPress} style={styles.navItem}><MaterialCommunityIcons name={icon} size={21} color={label === active ? green : '#58776A'} /><ThemedText type="small" style={[styles.navLabel, label === active && styles.navLabelActive]}>{label}</ThemedText></Pressable>)}</View>;
 }
 
 const styles = StyleSheet.create({
