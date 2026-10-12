@@ -21,7 +21,7 @@ type Step = 0 | 1 | 2 | 3 | 4 | 5;
 const green = '#087A38';
 const paleGreen = '#E9F8EC';
 
-export default function AgrochemicalsScreen() {
+export default function FarmerAgrochemicalsScreen() {
   const [step, setStep] = useState<Step | null>(null);
   const [showHistory, setShowHistory] = useState(false);
   const [showApproved, setShowApproved] = useState(false);

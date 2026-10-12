@@ -14,7 +14,7 @@ const lands = [
   { name: 'Silver Leaf Land', size: '3.2 hectares', sector: 'Small Sector', location: 'Kandy', image: true },
 ];
 
-export default function MyTeaLandsScreen() {
+export default function FarmerMyTeaLandsScreen() {
   return (
     <ImageBackground source={require('@/assets/images/background.png')} resizeMode="cover" style={styles.container}>
       <StatusBar style="dark" />
@@ -28,9 +28,9 @@ export default function MyTeaLandsScreen() {
           </View>
           {lands.map((land) => <LandCard key={land.name} {...land} />)}
           <Pressable accessibilityRole="button" style={styles.addButton}><MaterialCommunityIcons name="plus-circle-outline" size={18} color="#FFF" /><ThemedText type="smallBold" style={styles.addText}>Add New Tea Land</ThemedText></Pressable>
-          <View style={styles.footerActions}><Pressable accessibilityRole="button" onPress={() => router.push('/edit-tea-land')} style={styles.secondaryButton}><MaterialCommunityIcons name="pencil-outline" size={17} color="#168B3E" /><ThemedText type="smallBold" style={styles.secondaryText}>Edit Land</ThemedText></Pressable><Pressable style={styles.secondaryButton}><MaterialCommunityIcons name="history" size={17} color="#168B3E" /><ThemedText type="smallBold" style={styles.secondaryText}>View History</ThemedText></Pressable></View>
+          <View style={styles.footerActions}><Pressable accessibilityRole="button" onPress={() => router.push('/farmer-edit-tea-land')} style={styles.secondaryButton}><MaterialCommunityIcons name="pencil-outline" size={17} color="#168B3E" /><ThemedText type="smallBold" style={styles.secondaryText}>Edit Land</ThemedText></Pressable><Pressable style={styles.secondaryButton}><MaterialCommunityIcons name="history" size={17} color="#168B3E" /><ThemedText type="smallBold" style={styles.secondaryText}>View History</ThemedText></Pressable></View>
         </ScrollView>
-        <View style={styles.bottomNav}><NavItem icon="home-outline" label="Home" onPress={() => router.replace('/farmer-dashboard')} /><NavItem icon="map" label="My Lands" active /><NavItem icon="flask-outline" label="Agrochemicals" onPress={() => router.push('/agrochemicals')} /><NavItem icon="bell-outline" label="Notifications" onPress={() => router.push('/notifications')} /><NavItem icon="account-outline" label="Profile" onPress={() => router.push('/farmer-profile')} /></View>
+        <View style={styles.bottomNav}><NavItem icon="home-outline" label="Home" onPress={() => router.replace('/farmer-dashboard')} /><NavItem icon="map" label="My Lands" active /><NavItem icon="flask-outline" label="Agrochemicals" onPress={() => router.push('/farmer-agrochemicals')} /><NavItem icon="bell-outline" label="Notifications" onPress={() => router.push('/farmer-notification')} /><NavItem icon="account-outline" label="Profile" onPress={() => router.push('/farmer-profile')} /></View>
       </SafeAreaView>
     </ImageBackground>
   );

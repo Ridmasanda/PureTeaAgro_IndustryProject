@@ -65,12 +65,12 @@ export default function FarmerProfileScreen() {
           </View>
 
           <View style={styles.actionCard}>
-            {profileActions.map(([icon, label]) => <Pressable key={label} accessibilityRole="button" onPress={label === 'Settings' ? () => router.push('/settings') : undefined} style={({ pressed }) => [styles.actionRow, pressed && styles.pressed]}><MaterialCommunityIcons name={icon} size={18} color="#168B3E" /><ThemedText type="small" style={styles.actionLabel}>{label}</ThemedText><MaterialCommunityIcons name="chevron-right" size={18} color="#39785B" /></Pressable>)}
+            {profileActions.map(([icon, label]) => <Pressable key={label} accessibilityRole="button" onPress={label === 'Settings' ? () => router.push('/farmer-setting') : undefined} style={({ pressed }) => [styles.actionRow, pressed && styles.pressed]}><MaterialCommunityIcons name={icon} size={18} color="#168B3E" /><ThemedText type="small" style={styles.actionLabel}>{label}</ThemedText><MaterialCommunityIcons name="chevron-right" size={18} color="#39785B" /></Pressable>)}
           </View>
 
           <Pressable accessibilityRole="button" onPress={() => router.replace('/')} style={({ pressed }) => [styles.logout, pressed && styles.pressed]}><MaterialCommunityIcons name="logout" size={19} color="#D52C2C" /><ThemedText type="smallBold" style={styles.logoutText}>Logout</ThemedText></Pressable>
         </ScrollView>
-        <View style={styles.bottomNav}><NavItem icon="home" label="Home" onPress={() => router.replace('/farmer-dashboard')} /><NavItem icon="map-outline" label="My Lands" /><NavItem icon="flask-outline" label="Agrochemicals" onPress={() => router.push('/agrochemicals')} /><NavItem icon="bell-outline" label="Notifications" /><NavItem icon="account" label="Profile" active /></View>
+        <View style={styles.bottomNav}><NavItem icon="home" label="Home" onPress={() => router.replace('/farmer-dashboard')} /><NavItem icon="map-outline" label="My Lands" /><NavItem icon="flask-outline" label="Agrochemicals" onPress={() => router.push('/farmer-agrochemicals')} /><NavItem icon="bell-outline" label="Notifications" /><NavItem icon="account" label="Profile" active /></View>
       </SafeAreaView>
     </ImageBackground>
   );

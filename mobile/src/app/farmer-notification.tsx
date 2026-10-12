@@ -17,7 +17,7 @@ const notifications: { icon: IconName; title: string; message: string; count: st
   { icon: 'cog-outline', title: 'System', message: 'New approved chemical information', count: '1', tone: 'slate' },
 ];
 
-export default function NotificationsScreen() {
+export default function FarmerNotificationScreen() {
   return (
     <ImageBackground source={require('@/assets/images/background.png')} resizeMode="cover" style={styles.container}>
       <StatusBar style="dark" />
@@ -37,8 +37,8 @@ export default function NotificationsScreen() {
         </ScrollView>
         <View style={styles.bottomNav}>
           <NavItem icon="home-outline" label="Home" onPress={() => router.replace('/farmer-dashboard')} />
-          <NavItem icon="map-outline" label="My Lands" onPress={() => router.push('/my-tea-lands')} />
-          <NavItem icon="flask-outline" label="Agrochemicals" onPress={() => router.push('/agrochemicals')} />
+          <NavItem icon="map-outline" label="My Lands" onPress={() => router.push('/farmer-my-tea-lands')} />
+          <NavItem icon="flask-outline" label="Agrochemicals" onPress={() => router.push('/farmer-agrochemicals')} />
           <NavItem icon="bell" label="Notifications" active />
           <NavItem icon="account-outline" label="Profile" onPress={() => router.push('/farmer-profile')} />
         </View>

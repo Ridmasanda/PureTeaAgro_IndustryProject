@@ -7,7 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
 
-export default function EditTeaLandScreen() {
+export default function FarmerEditTeaLandScreen() {
   const [landName, setLandName] = useState('Green Valley Tea Land');
   const [address, setAddress] = useState('No. 12, Green Lane, Thalawakale');
   const [size, setSize] = useState('6.5');

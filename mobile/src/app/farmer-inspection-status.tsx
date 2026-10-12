@@ -17,7 +17,7 @@ const inspections = [
   ['Inspection #004', '25 Aug 2026', 'Follow-up Required', 'red'],
 ] as const;
 
-export default function InspectionStatusScreen() {
+export default function FarmerInspectionStatusScreen() {
   const [screen, setScreen] = useState<Screen>('history');
   return (
     <ImageBackground source={require('@/assets/images/background.png')} resizeMode="cover" style={styles.container}>

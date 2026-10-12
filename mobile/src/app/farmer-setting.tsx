@@ -17,7 +17,7 @@ const menu: [IconName, string, Screen][] = [
   ['help-circle-outline', 'Help & Support', 'support'],
 ];
 
-export default function SettingsScreen() {
+export default function FarmerSettingScreen() {
   const { screen } = useLocalSearchParams<{ screen?: Screen }>();
   const [current, setCurrent] = useState<Screen>(screen ?? 'main');
   const showScreen = (nextScreen: Screen) => setCurrent(nextScreen);
