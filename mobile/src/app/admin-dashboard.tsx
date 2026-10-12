@@ -62,7 +62,7 @@ export default function AdminDashboardScreen() {
         </ScrollView>
         <View style={styles.bottomNav}>
           <AdminNavItem icon="home" label="Home" active />
-          <AdminNavItem icon="account-group-outline" label="Users" onPress={() => Alert.alert('Manage Users', 'User management will be available here.')} />
+          <AdminNavItem icon="account-group-outline" label="Users" onPress={() => router.push('/admin-users')} />
           <AdminNavItem icon="shield-check-outline" label="Approvals" onPress={() => Alert.alert('Approvals', 'Pending account approvals will be available here.')} />
           <AdminNavItem icon="chart-line" label="Activity" onPress={() => Alert.alert('System Activity', 'System activity will be available here.')} />
           <AdminNavItem icon="cog-outline" label="Settings" onPress={() => Alert.alert('Settings', 'Administrator settings will be available here.')} />
@@ -77,7 +77,7 @@ function StatCard({ icon, label, value, detail, tone }: (typeof stats)[number]) 
 }
 
 function QuickAction({ icon, label, tone }: (typeof actions)[number]) {
-  return <Pressable accessibilityRole="button" onPress={() => Alert.alert(label, `${label} is ready for administrator actions.`)} style={({ pressed }) => [styles.actionCard, pressed && styles.pressed]}><View style={[styles.actionIcon, styles[`${tone}ActionIcon`]]}><MaterialCommunityIcons name={icon} size={23} color="#FFF" /></View><ThemedText type="smallBold" style={styles.actionText}>{label}</ThemedText></Pressable>;
+  return <Pressable accessibilityRole="button" onPress={label === 'Manage Users' ? () => router.push('/admin-users') : () => Alert.alert(label, `${label} is ready for administrator actions.`)} style={({ pressed }) => [styles.actionCard, pressed && styles.pressed]}><View style={[styles.actionIcon, styles[`${tone}ActionIcon`]]}><MaterialCommunityIcons name={icon} size={23} color="#FFF" /></View><ThemedText type="smallBold" style={styles.actionText}>{label}</ThemedText></Pressable>;
 }
 
 function HealthItem({ label }: { label: string }) {
