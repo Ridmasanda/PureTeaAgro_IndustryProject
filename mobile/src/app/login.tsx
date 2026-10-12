@@ -17,6 +17,7 @@ import { ThemedText } from '@/components/themed-text';
 export default function LoginScreen() {
   const [nic, setNic] = useState('');
   const [password, setPassword] = useState('');
+  const [isAdmin, setIsAdmin] = useState(false);
 
   return (
     <ImageBackground
@@ -43,12 +44,23 @@ export default function LoginScreen() {
             Login to continue your journey with PureTeaAgro
           </ThemedText>
 
+          <Pressable
+            accessibilityRole="button"
+            onPress={() => setIsAdmin((value) => !value)}
+            style={styles.roleSwitch}>
+            <MaterialCommunityIcons name={isAdmin ? 'account-cog-outline' : 'account-tie-hat-outline'} size={18} color="#168B3E" />
+            <ThemedText type="smallBold" style={styles.roleSwitchText}>
+              {isAdmin ? 'System Administrator login' : 'Farmer login'}
+            </ThemedText>
+            <ThemedText type="small" style={styles.roleSwitchAction}>Switch</ThemedText>
+          </Pressable>
+
           <View style={styles.formCard}>
             <View style={styles.inputGroup}>
               <View style={styles.labelRow}>
                 <MaterialCommunityIcons name="account-outline" size={18} color="#4D7D4F" />
                 <ThemedText type="smallBold" style={styles.labelText}>
-                  NIC Number
+                  {isAdmin ? 'Administrator ID / NIC' : 'NIC Number'}
                 </ThemedText>
               </View>
 
@@ -56,7 +68,7 @@ export default function LoginScreen() {
                 <TextInput
                   value={nic}
                   onChangeText={setNic}
-                  placeholder="Enter your NIC number"
+                  placeholder={isAdmin ? 'Enter your administrator ID or NIC' : 'Enter your NIC number'}
                   placeholderTextColor="#8A918F"
                   style={styles.input}
                   autoCapitalize="characters"
@@ -97,7 +109,7 @@ export default function LoginScreen() {
 
             <Pressable
               accessibilityRole="button"
-              onPress={() => router.replace('/farmer-dashboard')}
+              onPress={() => router.replace(isAdmin ? '/admin-dashboard' : '/farmer-dashboard')}
               style={({ pressed }) => [styles.loginButton, pressed && styles.loginPressed]}>
               <MaterialCommunityIcons name="login" size={22} color="#F8FFF6" />
               <ThemedText type="smallBold" style={styles.loginText}>
@@ -197,6 +209,28 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 10 },
     elevation: 4,
     marginTop: 20,
+  },
+  roleSwitch: {
+    width: '100%',
+    minHeight: 42,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#CBE4CE',
+    backgroundColor: 'rgba(245,255,246,0.94)',
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    gap: 8,
+    marginTop: 10,
+  },
+  roleSwitchText: {
+    flex: 1,
+    color: '#235D35',
+    fontSize: 12,
+  },
+  roleSwitchAction: {
+    color: '#168B3E',
+    fontSize: 11,
   },
   inputGroup: {
     marginBottom: 12,
