@@ -102,6 +102,8 @@ export default function RegisterScreen() {
                     setSelectedRole(role.title);
                     if (role.title === 'Farmer') {
                       router.push('/farmer-registration');
+                    } else if (role.title === 'System Administrator') {
+                      router.push('/admin-registration');
                     }
                   }}
                   style={({ pressed }) => [
