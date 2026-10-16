@@ -65,7 +65,7 @@ export default function AdminUsersScreen() {
             <View style={styles.actionsRow}><ActionButton icon="eye-outline" label="View User" /><ActionButton icon="account-check-outline" label="Activate" /><ActionButton icon="pause-circle-outline" label="Suspend" /><ActionButton icon="lock-reset" label="Reset Password" /><ActionButton icon="history" label="View Activity" /></View>
           </View>
         </ScrollView>
-        <View style={styles.bottomNav}><AdminNavItem icon="home-outline" label="Home" onPress={() => router.replace('/admin-dashboard')} /><AdminNavItem icon="account-group" label="Users" active /><AdminNavItem icon="shield-check-outline" label="Approvals" /><AdminNavItem icon="chart-line" label="Activity" /><AdminNavItem icon="cog-outline" label="Settings" /></View>
+        <View style={styles.bottomNav}><AdminNavItem icon="home-outline" label="Home" onPress={() => router.replace('/admin-dashboard')} /><AdminNavItem icon="account-group" label="Users" active /><AdminNavItem icon="shield-check-outline" label="Approvals" onPress={() => router.replace('/admin-approvals')} /><AdminNavItem icon="chart-line" label="Activity" /><AdminNavItem icon="cog-outline" label="Settings" /></View>
       </SafeAreaView>
     </ImageBackground>
   );
