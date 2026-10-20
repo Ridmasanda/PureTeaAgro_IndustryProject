@@ -13,9 +13,8 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
-import { authenticateAccount, type AuthenticatedAccount } from '@/services/account-auth';
 
-type LoginRole = AuthenticatedAccount['role'] | 'farmer' | 'field-officer';
+type LoginRole = 'farmer' | 'field-officer' | 'tea-inspector' | 'factory-officer';
 
 export default function LoginScreen() {
   const {
@@ -29,59 +28,20 @@ export default function LoginScreen() {
   }>();
   const [registeredIdInput, setRegisteredIdInput] = useState(registeredId ?? registeredNic ?? '');
   const [password, setPassword] = useState('');
-  const [loginError, setLoginError] = useState('');
-  const [submitting, setSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [selectedRole, setSelectedRole] = useState<LoginRole>(
     registeredRole ?? 'farmer',
   );
 
-  const signIn = async () => {
-    setLoginError('');
-    if (!registeredIdInput.trim() || !password) {
-      setLoginError('Enter your registered ID and password.');
-      return;
-    }
-
-    setSubmitting(true);
-    try {
-      if (selectedRole === 'farmer' || selectedRole === 'field-officer') {
-        router.replace(selectedRole === 'farmer' ? '/farmer-dashboard' : '/field-officer-dashboard');
-        return;
-      }
-
-      const authenticated = await authenticateAccount(registeredIdInput, password, selectedRole);
-      if (!authenticated) {
-        setLoginError('Invalid registered ID or password.');
-        return;
-      }
-
-      if (authenticated.role === 'tea-inspector') {
-        router.replace({
-          pathname: '/tea-inspector-dashboard',
-          params: {
-            inspectorId: authenticated.account.inspectorId,
-            fullName: authenticated.account.fullName,
-            district: authenticated.account.district,
-            mobile: authenticated.account.mobile,
-            organization: authenticated.account.organization,
-          },
-        });
-      } else {
-        router.replace({
-          pathname: '/factory-officer-dashboard',
-          params: {
-            employeeId: authenticated.account.employeeId,
-            fullName: authenticated.account.fullName,
-            factory: authenticated.account.factory,
-            organization: authenticated.account.organization,
-          },
-        });
-      }
-    } catch (error) {
-      setLoginError(error instanceof Error ? error.message : 'Unable to sign in. Please try again.');
-    } finally {
-      setSubmitting(false);
+  const signIn = () => {
+    if (selectedRole === 'farmer') {
+      router.replace('/farmer-dashboard');
+    } else if (selectedRole === 'field-officer') {
+      router.replace('/field-officer-dashboard');
+    } else if (selectedRole === 'tea-inspector') {
+      router.replace('/tea-inspector-dashboard');
+    } else {
+      router.replace('/factory-officer-dashboard');
     }
   };
 
@@ -134,7 +94,6 @@ export default function LoginScreen() {
                       key={role}
                       onPress={() => {
                         setSelectedRole(role);
-                        setLoginError('');
                       }}
                       style={[styles.roleOption, selected && styles.roleOptionSelected]}>
                       <MaterialCommunityIcons
@@ -233,17 +192,14 @@ export default function LoginScreen() {
               </ThemedText>
             </Pressable>
 
-            {loginError ? <ThemedText style={styles.loginError}>{loginError}</ThemedText> : null}
-
             <Pressable
               accessibilityLabel="Login"
               accessibilityRole="button"
-              disabled={submitting}
               onPress={signIn}
               style={({ pressed }) => [styles.loginButton, pressed && styles.loginPressed]}>
               <MaterialCommunityIcons name="login" size={22} color="#F8FFF6" />
               <ThemedText type="smallBold" style={styles.loginText}>
-                {submitting ? 'Signing in...' : 'Login'}
+                Login
               </ThemedText>
             </Pressable>
           </View>
@@ -426,11 +382,6 @@ const styles = StyleSheet.create({
   forgotPasswordText: {
     color: '#2A7B37',
     fontSize: 13,
-  },
-  loginError: {
-    color: '#B12626',
-    fontSize: 13,
-    marginBottom: 10,
   },
   loginButton: {
     height: 50,
