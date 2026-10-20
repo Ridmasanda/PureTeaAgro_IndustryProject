@@ -93,8 +93,11 @@ export default function RegisterScreen() {
                   key={role.title}
                   onPress={() => {
                     setSelectedRole(role.title);
+
                     if (role.title === 'Farmer') {
                       router.push('/farmer-registration');
+                    } else if (role.title === 'Field Officer') {
+                      router.push('/field-officer-registration');
                     }
                   }}
                   style={({ pressed }) => [

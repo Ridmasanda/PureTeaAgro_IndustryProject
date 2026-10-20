@@ -17,6 +17,7 @@ import { ThemedText } from '@/components/themed-text';
 export default function LoginScreen() {
   const [nic, setNic] = useState('');
   const [password, setPassword] = useState('');
+  const [role, setRole] = useState<'farmer' | 'fieldOfficer'>('farmer');
 
   return (
     <ImageBackground
@@ -42,6 +43,24 @@ export default function LoginScreen() {
           <ThemedText type="small" style={styles.subtitle}>
             Login to continue your journey with PureTeaAgro
           </ThemedText>
+
+          <Pressable
+            accessibilityLabel={`Login as ${role === 'farmer' ? 'Farmer' : 'Field Officer'}. Switch role`}
+            accessibilityRole="button"
+            onPress={() => setRole((value) => (value === 'farmer' ? 'fieldOfficer' : 'farmer'))}
+            style={styles.roleSwitch}>
+            <MaterialCommunityIcons
+              name={role === 'farmer' ? 'account-tie-hat-outline' : 'clipboard-account-outline'}
+              size={18}
+              color="#168B3E"
+            />
+            <ThemedText type="smallBold" style={styles.roleSwitchText}>
+              {role === 'farmer' ? 'Farmer login' : 'Field Officer login'}
+            </ThemedText>
+            <ThemedText type="small" style={styles.roleSwitchAction}>
+              Switch
+            </ThemedText>
+          </Pressable>
 
           <View style={styles.formCard}>
             <View style={styles.inputGroup}>
@@ -96,8 +115,11 @@ export default function LoginScreen() {
             </Pressable>
 
             <Pressable
+              accessibilityLabel="Login"
               accessibilityRole="button"
-              onPress={() => router.replace('/farmer-dashboard')}
+              onPress={() =>
+                router.replace(role === 'farmer' ? '/farmer-dashboard' : '/field-officer-dashboard')
+              }
               style={({ pressed }) => [styles.loginButton, pressed && styles.loginPressed]}>
               <MaterialCommunityIcons name="login" size={22} color="#F8FFF6" />
               <ThemedText type="smallBold" style={styles.loginText}>
@@ -183,6 +205,28 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 4,
     marginBottom: 16,
+  },
+  roleSwitch: {
+    width: '100%',
+    minHeight: 42,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#CBE4CE',
+    backgroundColor: 'rgba(245,255,246,0.94)',
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    gap: 8,
+    marginTop: 10,
+  },
+  roleSwitchText: {
+    flex: 1,
+    color: '#235D35',
+    fontSize: 12,
+  },
+  roleSwitchAction: {
+    color: '#168B3E',
+    fontSize: 11,
   },
   formCard: {
     width: '100%',
