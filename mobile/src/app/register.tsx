@@ -19,7 +19,6 @@ type Role = {
   title: string;
   description: string;
   icon: IconName;
-  approvalRequired?: boolean;
 };
 
 const roles: Role[] = [
@@ -37,12 +36,6 @@ const roles: Role[] = [
     title: 'Leaf Collector',
     description: 'Green leaf collection',
     icon: 'leaf',
-  },
-  {
-    title: 'System Administrator',
-    description: 'Manage the platform',
-    icon: 'account-cog-outline',
-    approvalRequired: true,
   },
   {
     title: 'Field Officer',
@@ -98,7 +91,12 @@ export default function RegisterScreen() {
                   accessibilityLabel={`Select ${role.title}`}
                   accessibilityRole="button"
                   key={role.title}
-                  onPress={() => setSelectedRole(role.title)}
+                  onPress={() => {
+                    setSelectedRole(role.title);
+                    if (role.title === 'Farmer') {
+                      router.push('/farmer-registration');
+                    }
+                  }}
                   style={({ pressed }) => [
                     styles.roleCard,
                     isSelected && styles.roleCardSelected,
@@ -119,13 +117,6 @@ export default function RegisterScreen() {
                     </ThemedText>
                   </View>
                   <MaterialCommunityIcons name="chevron-right" size={22} color="#1F5E32" />
-                  {role.approvalRequired && (
-                    <View style={styles.approvalBadge}>
-                      <ThemedText type="smallBold" style={styles.approvalText}>
-                        Approval required
-                      </ThemedText>
-                    </View>
-                  )}
                 </Pressable>
               );
             })}
@@ -219,18 +210,5 @@ const styles = StyleSheet.create({
     fontSize: 12,
     lineHeight: 17,
     marginTop: 3,
-  },
-  approvalBadge: {
-    alignSelf: 'flex-start',
-    borderRadius: 18,
-    backgroundColor: '#DFF2D7',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    marginTop: 8,
-  },
-  approvalText: {
-    color: '#33733F',
-    fontSize: 10,
-    lineHeight: 14,
   },
 });
