@@ -43,7 +43,7 @@ const roles: Role[] = [
     icon: 'clipboard-account-outline',
   },
   {
-    title: 'Factory Manager',
+    title: 'Factory Officer',
     description: 'Manage factory operations',
     icon: 'factory',
   },
@@ -93,11 +93,14 @@ export default function RegisterScreen() {
                   key={role.title}
                   onPress={() => {
                     setSelectedRole(role.title);
-
                     if (role.title === 'Farmer') {
                       router.push('/farmer-registration');
                     } else if (role.title === 'Field Officer') {
                       router.push('/field-officer-registration');
+                    } else if (role.title === 'Factory Officer') {
+                      router.push('/factory-officer-registration');
+                    } else if (role.title === 'Tea Inspector') {
+                      router.push('/tea-inspector-registration');
                     }
                   }}
                   style={({ pressed }) => [
