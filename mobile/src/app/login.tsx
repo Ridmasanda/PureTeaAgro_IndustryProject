@@ -95,7 +95,11 @@ export default function LoginScreen() {
               </ThemedText>
             </Pressable>
 
-            <Pressable accessibilityRole="button" style={({ pressed }) => [styles.loginButton, pressed && styles.loginPressed]}>
+            <Pressable
+              accessibilityLabel="Login"
+              accessibilityRole="button"
+              onPress={() => router.replace('/field-officer-dashboard')}
+              style={({ pressed }) => [styles.loginButton, pressed && styles.loginPressed]}>
               <MaterialCommunityIcons name="login" size={22} color="#F8FFF6" />
               <ThemedText type="smallBold" style={styles.loginText}>
                 Login
