@@ -1,5 +1,5 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
 import {
@@ -13,10 +13,72 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
+import { authenticateAccount, type AuthenticatedAccount } from '@/services/account-auth';
+
+type LoginRole = AuthenticatedAccount['role'];
 
 export default function LoginScreen() {
-  const [nic, setNic] = useState('');
+  const {
+    id: registeredId,
+    nic: registeredNic,
+    role: registeredRole,
+  } = useLocalSearchParams<{
+    id?: string;
+    nic?: string;
+    role?: LoginRole;
+  }>();
+  const [registeredIdInput, setRegisteredIdInput] = useState(registeredId ?? registeredNic ?? '');
   const [password, setPassword] = useState('');
+  const [loginError, setLoginError] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [selectedRole, setSelectedRole] = useState<LoginRole>(
+    registeredRole === 'factory-officer' ? 'factory-officer' : 'tea-inspector',
+  );
+
+  const signIn = async () => {
+    setLoginError('');
+    if (!registeredIdInput.trim() || !password) {
+      setLoginError('Enter your registered ID and password.');
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const authenticated = await authenticateAccount(registeredIdInput, password, selectedRole);
+      if (!authenticated) {
+        setLoginError('Invalid registered ID or password.');
+        return;
+      }
+
+      if (authenticated.role === 'tea-inspector') {
+        router.replace({
+          pathname: '/tea-inspector-dashboard',
+          params: {
+            inspectorId: authenticated.account.inspectorId,
+            fullName: authenticated.account.fullName,
+            district: authenticated.account.district,
+            mobile: authenticated.account.mobile,
+            organization: authenticated.account.organization,
+          },
+        });
+      } else {
+        router.replace({
+          pathname: '/factory-officer-dashboard',
+          params: {
+            employeeId: authenticated.account.employeeId,
+            fullName: authenticated.account.fullName,
+            factory: authenticated.account.factory,
+            organization: authenticated.account.organization,
+          },
+        });
+      }
+    } catch (error) {
+      setLoginError(error instanceof Error ? error.message : 'Unable to sign in. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <ImageBackground
@@ -46,20 +108,63 @@ export default function LoginScreen() {
           <View style={styles.formCard}>
             <View style={styles.inputGroup}>
               <View style={styles.labelRow}>
+                <MaterialCommunityIcons name="account-switch-outline" size={18} color="#4D7D4F" />
+                <ThemedText type="smallBold" style={styles.labelText}>
+                  Login as
+                </ThemedText>
+              </View>
+              <View style={styles.rolePicker}>
+                {([
+                  { role: 'tea-inspector', label: 'Tea Inspector', icon: 'account-search-outline' },
+                  { role: 'factory-officer', label: 'Factory Officer', icon: 'factory' },
+                ] as const).map(({ role, label, icon }) => {
+                  const selected = selectedRole === role;
+                  return (
+                    <Pressable
+                      accessibilityRole="button"
+                      accessibilityState={{ selected }}
+                      accessibilityLabel={`Login as ${label}`}
+                      key={role}
+                      onPress={() => {
+                        setSelectedRole(role);
+                        setLoginError('');
+                      }}
+                      style={[styles.roleOption, selected && styles.roleOptionSelected]}>
+                      <MaterialCommunityIcons
+                        name={icon}
+                        size={15}
+                        color={selected ? '#FFFFFF' : '#4D7D4F'}
+                      />
+                      <ThemedText
+                        type="smallBold"
+                        style={[styles.roleOptionText, selected && styles.roleOptionTextSelected]}>
+                        {label}
+                      </ThemedText>
+                    </Pressable>
+                  );
+                })}
+              </View>
+            </View>
+
+            <View style={styles.inputGroup}>
+              <View style={styles.labelRow}>
                 <MaterialCommunityIcons name="account-outline" size={18} color="#4D7D4F" />
                 <ThemedText type="smallBold" style={styles.labelText}>
-                  NIC Number
+                  Registered ID
                 </ThemedText>
               </View>
 
               <View style={styles.inputWrap}>
                 <TextInput
-                  value={nic}
-                  onChangeText={setNic}
-                  placeholder="Enter your NIC number"
+                  accessibilityLabel={selectedRole === 'tea-inspector' ? 'Inspector ID or NIC' : 'Employee ID'}
+                  value={registeredIdInput}
+                  onChangeText={setRegisteredIdInput}
+                  placeholder={selectedRole === 'tea-inspector' ? 'Enter your Inspector ID or NIC' : 'Enter your Employee ID'}
                   placeholderTextColor="#8A918F"
                   style={styles.input}
                   autoCapitalize="characters"
+                  autoCorrect={false}
+                  returnKeyType="next"
                 />
                 <MaterialCommunityIcons name="card-account-details-outline" size={18} color="#4D7D4F" />
               </View>
@@ -75,14 +180,28 @@ export default function LoginScreen() {
 
               <View style={styles.inputWrap}>
                 <TextInput
+                  accessibilityLabel="Password"
                   value={password}
                   onChangeText={setPassword}
                   placeholder="Enter your password"
                   placeholderTextColor="#8A918F"
                   style={styles.input}
-                  secureTextEntry
+                  secureTextEntry={!showPassword}
+                  autoCapitalize="none"
+                  returnKeyType="go"
+                  onSubmitEditing={signIn}
                 />
-                <MaterialCommunityIcons name="eye-off-outline" size={18} color="#4D7D4F" />
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel={showPassword ? 'Hide password' : 'Show password'}
+                  onPress={() => setShowPassword((current) => !current)}
+                  hitSlop={8}>
+                  <MaterialCommunityIcons
+                    name={showPassword ? 'eye-outline' : 'eye-off-outline'}
+                    size={18}
+                    color="#4D7D4F"
+                  />
+                </Pressable>
               </View>
             </View>
 
@@ -95,10 +214,16 @@ export default function LoginScreen() {
               </ThemedText>
             </Pressable>
 
-            <Pressable accessibilityRole="button" style={({ pressed }) => [styles.loginButton, pressed && styles.loginPressed]}>
+            {loginError ? <ThemedText style={styles.loginError}>{loginError}</ThemedText> : null}
+
+            <Pressable
+              accessibilityRole="button"
+              disabled={submitting}
+              onPress={signIn}
+              style={({ pressed }) => [styles.loginButton, pressed && styles.loginPressed]}>
               <MaterialCommunityIcons name="login" size={22} color="#F8FFF6" />
               <ThemedText type="smallBold" style={styles.loginText}>
-                Login
+                {submitting ? 'Signing in...' : 'Login'}
               </ThemedText>
             </Pressable>
           </View>
@@ -198,6 +323,34 @@ const styles = StyleSheet.create({
   inputGroup: {
     marginBottom: 12,
   },
+  rolePicker: {
+    flexDirection: 'row',
+    gap: 7,
+  },
+  roleOption: {
+    minHeight: 40,
+    flex: 1,
+    borderRadius: 9,
+    borderWidth: 1,
+    borderColor: 'rgba(45,84,45,0.2)',
+    backgroundColor: '#F7FAF6',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 5,
+    gap: 5,
+  },
+  roleOptionSelected: {
+    borderColor: '#156E31',
+    backgroundColor: '#156E31',
+  },
+  roleOptionText: {
+    color: '#416347',
+    fontSize: 10,
+  },
+  roleOptionTextSelected: {
+    color: '#FFFFFF',
+  },
   labelRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -231,6 +384,11 @@ const styles = StyleSheet.create({
   forgotPasswordText: {
     color: '#2A7B37',
     fontSize: 13,
+  },
+  loginError: {
+    color: '#B12626',
+    fontSize: 13,
+    marginBottom: 10,
   },
   loginButton: {
     height: 50,
