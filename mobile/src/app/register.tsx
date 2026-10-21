@@ -127,6 +127,35 @@ export default function RegisterScreen() {
               );
             })}
           </View>
+
+          {selectedRole === 'Leaf Collector' && (
+            <Pressable
+              accessibilityRole="button"
+              onPress={() => router.push('/collector-registration')}
+              style={({ pressed }) => [
+                styles.continueButton,
+                pressed && styles.roleCardPressed,
+              ]}>
+              <ThemedText type="smallBold" style={styles.continueButtonText}>
+                Continue as Leaf Collector
+              </ThemedText>
+              <MaterialCommunityIcons name="arrow-right" size={20} color="#FFFFFF" />
+            </Pressable>
+          )}
+          {selectedRole === 'System Administrator' && (
+            <Pressable
+              accessibilityRole="button"
+              onPress={() => router.push('/administrator-registration')}
+              style={({ pressed }) => [
+                styles.continueButton,
+                pressed && styles.roleCardPressed,
+              ]}>
+              <ThemedText type="smallBold" style={styles.continueButtonText}>
+                Continue as System Administrator
+              </ThemedText>
+              <MaterialCommunityIcons name="arrow-right" size={20} color="#FFFFFF" />
+            </Pressable>
+          )}
         </ScrollView>
       </SafeAreaView>
     </ImageBackground>
@@ -176,6 +205,20 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     justifyContent: 'space-between',
     rowGap: 16,
+  },
+  continueButton: {
+    minHeight: 52,
+    borderRadius: 12,
+    backgroundColor: '#176B32',
+    marginTop: 20,
+    paddingHorizontal: 18,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  continueButtonText: {
+    color: '#FFFFFF',
+    fontSize: 15,
   },
   roleCard: {
     width: '47.8%',

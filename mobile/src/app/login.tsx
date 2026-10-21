@@ -13,8 +13,15 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
+import { authenticateAccount } from '@/services/account-auth';
 
-type LoginRole = 'farmer' | 'field-officer' | 'tea-inspector' | 'factory-officer';
+type LoginRole =
+  | 'farmer'
+  | 'field-officer'
+  | 'tea-inspector'
+  | 'factory-officer'
+  | 'collector'
+  | 'administrator';
 
 export default function LoginScreen() {
   const {
@@ -24,24 +31,60 @@ export default function LoginScreen() {
   } = useLocalSearchParams<{
     id?: string;
     nic?: string;
-    role?: LoginRole;
+    role?: LoginRole | 'admin';
   }>();
-  const [registeredIdInput, setRegisteredIdInput] = useState(registeredId ?? registeredNic ?? '');
+  const initialRole: LoginRole =
+    registeredRole === 'admin'
+      ? 'administrator'
+      : registeredRole ?? 'farmer';
+  const [registeredIdInput, setRegisteredIdInput] = useState(
+    registeredId ?? registeredNic ?? '',
+  );
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [selectedRole, setSelectedRole] = useState<LoginRole>(
-    registeredRole ?? 'farmer',
-  );
+  const [selectedRole, setSelectedRole] = useState<LoginRole>(initialRole);
+  const [loginError, setLoginError] = useState('');
 
-  const signIn = () => {
+  const signIn = async () => {
+    if (!registeredIdInput.trim() || !password) {
+      setLoginError('Enter your registered ID and password to continue.');
+      return;
+    }
+
+    setLoginError('');
+    if (selectedRole === 'tea-inspector' || selectedRole === 'factory-officer') {
+      try {
+        const account = await authenticateAccount(
+          registeredIdInput,
+          password,
+          selectedRole,
+        );
+        if (!account) {
+          setLoginError('The registered ID or password is incorrect.');
+          return;
+        }
+      } catch (error) {
+        setLoginError(
+          error instanceof Error
+            ? error.message
+            : 'Login could not be completed. Please try again.',
+        );
+        return;
+      }
+    }
+
     if (selectedRole === 'farmer') {
       router.replace('/farmer-dashboard');
     } else if (selectedRole === 'field-officer') {
       router.replace('/field-officer-dashboard');
     } else if (selectedRole === 'tea-inspector') {
       router.replace('/tea-inspector-dashboard');
-    } else {
+    } else if (selectedRole === 'factory-officer') {
       router.replace('/factory-officer-dashboard');
+    } else if (selectedRole === 'administrator') {
+      router.replace('/administrator-home');
+    } else {
+      router.replace('/collector-home');
     }
   };
 
@@ -84,6 +127,8 @@ export default function LoginScreen() {
                   { role: 'field-officer', label: 'Field Officer', icon: 'clipboard-account-outline' },
                   { role: 'tea-inspector', label: 'Tea Inspector', icon: 'account-search-outline' },
                   { role: 'factory-officer', label: 'Factory Officer', icon: 'factory' },
+                  { role: 'collector', label: 'Leaf Collector', icon: 'leaf' },
+                  { role: 'administrator', label: 'Administrator', icon: 'account-cog-outline' },
                 ] as const).map(({ role, label, icon }) => {
                   const selected = selectedRole === role;
                   return (
@@ -130,7 +175,10 @@ export default function LoginScreen() {
                         : 'NIC Number'
                   }
                   value={registeredIdInput}
-                  onChangeText={setRegisteredIdInput}
+                  onChangeText={(value) => {
+                    setRegisteredIdInput(value);
+                    setLoginError('');
+                  }}
                   placeholder={
                     selectedRole === 'tea-inspector'
                       ? 'Enter your Inspector ID or NIC'
@@ -160,7 +208,10 @@ export default function LoginScreen() {
                 <TextInput
                   accessibilityLabel="Password"
                   value={password}
-                  onChangeText={setPassword}
+                  onChangeText={(value) => {
+                    setPassword(value);
+                    setLoginError('');
+                  }}
                   placeholder="Enter your password"
                   placeholderTextColor="#8A918F"
                   style={styles.input}
@@ -181,6 +232,9 @@ export default function LoginScreen() {
                   />
                 </Pressable>
               </View>
+              <ThemedText type="small" style={styles.demoNote}>
+                Demo login: credentials are not verified by a server.
+              </ThemedText>
             </View>
 
             <Pressable
@@ -191,6 +245,12 @@ export default function LoginScreen() {
                 Forgot Password?
               </ThemedText>
             </Pressable>
+
+            {loginError ? (
+              <ThemedText accessibilityRole="alert" type="small" style={styles.loginError}>
+                {loginError}
+              </ThemedText>
+            ) : null}
 
             <Pressable
               accessibilityLabel="Login"
@@ -318,16 +378,23 @@ const styles = StyleSheet.create({
     elevation: 4,
     marginTop: 20,
   },
+  demoNote: {
+    color: '#758276',
+    fontSize: 10,
+    textAlign: 'center',
+    marginTop: 8,
+  },
   inputGroup: {
     marginBottom: 12,
   },
   rolePicker: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: 7,
   },
   roleOption: {
     minHeight: 40,
-    flex: 1,
+    width: '31%',
     borderRadius: 9,
     borderWidth: 1,
     borderColor: 'rgba(45,84,45,0.2)',
@@ -345,6 +412,7 @@ const styles = StyleSheet.create({
   roleOptionText: {
     color: '#416347',
     fontSize: 10,
+    textAlign: 'center',
   },
   roleOptionTextSelected: {
     color: '#FFFFFF',
@@ -382,6 +450,11 @@ const styles = StyleSheet.create({
   forgotPasswordText: {
     color: '#2A7B37',
     fontSize: 13,
+  },
+  loginError: {
+    color: '#B42318',
+    fontSize: 12,
+    marginBottom: 10,
   },
   loginButton: {
     height: 50,
