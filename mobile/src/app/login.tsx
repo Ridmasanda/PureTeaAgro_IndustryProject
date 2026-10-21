@@ -6,6 +6,7 @@ import {
   Image,
   ImageBackground,
   Pressable,
+  ScrollView,
   StyleSheet,
   TextInput,
   View,
@@ -13,7 +14,6 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
-import { authenticateAccount } from '@/services/account-auth';
 
 type LoginRole =
   | 'farmer'
@@ -46,32 +46,7 @@ export default function LoginScreen() {
   const [loginError, setLoginError] = useState('');
 
   const signIn = async () => {
-    if (!registeredIdInput.trim() || !password) {
-      setLoginError('Enter your registered ID and password to continue.');
-      return;
-    }
-
     setLoginError('');
-    if (selectedRole === 'tea-inspector' || selectedRole === 'factory-officer') {
-      try {
-        const account = await authenticateAccount(
-          registeredIdInput,
-          password,
-          selectedRole,
-        );
-        if (!account) {
-          setLoginError('The registered ID or password is incorrect.');
-          return;
-        }
-      } catch (error) {
-        setLoginError(
-          error instanceof Error
-            ? error.message
-            : 'Login could not be completed. Please try again.',
-        );
-        return;
-      }
-    }
 
     if (selectedRole === 'farmer') {
       router.replace('/farmer-dashboard');
@@ -102,7 +77,10 @@ export default function LoginScreen() {
           <MaterialCommunityIcons name="chevron-left" size={24} color="#3A4D35" />
         </Pressable>
 
-        <View style={styles.content}>
+        <ScrollView
+          bounces={false}
+          contentContainerStyle={styles.content}
+          showsVerticalScrollIndicator={false}>
           <Image source={require('@/assets/images/logo.png')} resizeMode="contain" style={styles.logoImage} />
 
           <ThemedText type="subtitle" style={styles.title}>
@@ -280,7 +258,7 @@ export default function LoginScreen() {
 
             <MaterialCommunityIcons name="shield-lock-outline" size={34} color="rgba(31,104,49,0.75)" />
           </View>
-        </View>
+        </ScrollView>
       </SafeAreaView>
     </ImageBackground>
   );
@@ -317,7 +295,7 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   content: {
-    flex: 1,
+    flexGrow: 1,
     alignItems: 'center',
     paddingTop: 6,
     paddingBottom: 16,

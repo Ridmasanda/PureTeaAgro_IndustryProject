@@ -47,6 +47,11 @@ const roles: Role[] = [
     description: 'Manage factory operations',
     icon: 'factory',
   },
+  {
+    title: 'System Administrator',
+    description: 'Manage system access and users',
+    icon: 'account-cog-outline',
+  },
 ];
 
 export default function RegisterScreen() {

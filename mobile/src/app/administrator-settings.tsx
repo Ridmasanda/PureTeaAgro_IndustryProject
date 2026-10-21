@@ -57,7 +57,14 @@ export default function AdministratorSettingsScreen() {
   function confirmLogout() {
     Alert.alert('Log out', 'Are you sure you want to sign out from your administrator account?', [
       { text: 'Cancel', style: 'cancel' },
-      { text: 'Log Out', style: 'destructive', onPress: () => router.replace('/login') },
+      {
+        text: 'Log Out',
+        style: 'destructive',
+        onPress: () => {
+          router.dismissAll();
+          router.push('/login');
+        },
+      },
     ]);
   }
 
