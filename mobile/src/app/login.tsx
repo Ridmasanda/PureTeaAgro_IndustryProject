@@ -1,5 +1,5 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
 import {
@@ -15,8 +15,23 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ThemedText } from '@/components/themed-text';
 
 export default function LoginScreen() {
+  const { role } = useLocalSearchParams<{ role?: string }>();
   const [nic, setNic] = useState('');
   const [password, setPassword] = useState('');
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const [loginError, setLoginError] = useState('');
+  const [loginRole, setLoginRole] = useState<'Leaf Collector' | 'System Administrator'>(() =>
+    role === 'admin' ? 'System Administrator' : 'Leaf Collector',
+  );
+
+  function handleLogin() {
+    if (!nic.trim() || !password) {
+      setLoginError('Enter your NIC number and password to continue.');
+      return;
+    }
+
+    router.replace(loginRole === 'System Administrator' ? '/administrator-home' : '/collector-home');
+  }
 
   return (
     <ImageBackground
@@ -44,6 +59,29 @@ export default function LoginScreen() {
           </ThemedText>
 
           <View style={styles.formCard}>
+            <ThemedText type="smallBold" style={styles.labelText}>Login as</ThemedText>
+            <View style={styles.roleOptions}>
+              {(['Leaf Collector', 'System Administrator'] as const).map((role) => {
+                const selected = loginRole === role;
+                return (
+                  <Pressable
+                    accessibilityRole="radio"
+                    accessibilityState={{ checked: selected }}
+                    key={role}
+                    onPress={() => setLoginRole(role)}
+                    style={[styles.roleOption, selected && styles.roleOptionSelected]}>
+                    <MaterialCommunityIcons
+                      name={role === 'Leaf Collector' ? 'leaf' : 'account-cog-outline'}
+                      size={17}
+                      color={selected ? '#FFFFFF' : '#286B3A'}
+                    />
+                    <ThemedText type="smallBold" style={[styles.roleOptionText, selected && styles.roleOptionTextSelected]}>
+                      {role}
+                    </ThemedText>
+                  </Pressable>
+                );
+              })}
+            </View>
             <View style={styles.inputGroup}>
               <View style={styles.labelRow}>
                 <MaterialCommunityIcons name="account-outline" size={18} color="#4D7D4F" />
@@ -54,12 +92,17 @@ export default function LoginScreen() {
 
               <View style={styles.inputWrap}>
                 <TextInput
+                  accessibilityLabel="NIC Number"
                   value={nic}
-                  onChangeText={setNic}
+                  onChangeText={(value) => {
+                    setNic(value);
+                    setLoginError('');
+                  }}
                   placeholder="Enter your NIC number"
                   placeholderTextColor="#8A918F"
                   style={styles.input}
                   autoCapitalize="characters"
+                  autoCorrect={false}
                 />
                 <MaterialCommunityIcons name="card-account-details-outline" size={18} color="#4D7D4F" />
               </View>
@@ -75,15 +118,31 @@ export default function LoginScreen() {
 
               <View style={styles.inputWrap}>
                 <TextInput
+                  accessibilityLabel="Password"
                   value={password}
-                  onChangeText={setPassword}
+                  onChangeText={(value) => {
+                    setPassword(value);
+                    setLoginError('');
+                  }}
                   placeholder="Enter your password"
                   placeholderTextColor="#8A918F"
                   style={styles.input}
-                  secureTextEntry
+                  secureTextEntry={!passwordVisible}
                 />
-                <MaterialCommunityIcons name="eye-off-outline" size={18} color="#4D7D4F" />
+                <Pressable
+                  accessibilityLabel={passwordVisible ? 'Hide password' : 'Show password'}
+                  accessibilityRole="button"
+                  onPress={() => setPasswordVisible((visible) => !visible)}>
+                  <MaterialCommunityIcons
+                    name={passwordVisible ? 'eye-outline' : 'eye-off-outline'}
+                    size={18}
+                    color="#4D7D4F"
+                  />
+                </Pressable>
               </View>
+              <ThemedText type="small" style={styles.demoNote}>
+                Demo login: credentials are not verified by a server.
+              </ThemedText>
             </View>
 
             <Pressable
@@ -95,7 +154,16 @@ export default function LoginScreen() {
               </ThemedText>
             </Pressable>
 
-            <Pressable accessibilityRole="button" style={({ pressed }) => [styles.loginButton, pressed && styles.loginPressed]}>
+            {loginError ? (
+              <ThemedText accessibilityRole="alert" type="small" style={styles.loginError}>
+                {loginError}
+              </ThemedText>
+            ) : null}
+
+            <Pressable
+              accessibilityRole="button"
+              onPress={handleLogin}
+              style={({ pressed }) => [styles.loginButton, pressed && styles.loginPressed]}>
               <MaterialCommunityIcons name="login" size={22} color="#F8FFF6" />
               <ThemedText type="smallBold" style={styles.loginText}>
                 Login
@@ -195,6 +263,43 @@ const styles = StyleSheet.create({
     elevation: 4,
     marginTop: 20,
   },
+  roleOptions: {
+    flexDirection: 'row',
+    gap: 8,
+    marginTop: 8,
+    marginBottom: 14,
+  },
+  roleOption: {
+    flex: 1,
+    minHeight: 40,
+    borderWidth: 1,
+    borderColor: '#D5E3D7',
+    borderRadius: 9,
+    backgroundColor: '#FFFFFF',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 5,
+    paddingHorizontal: 5,
+  },
+  roleOptionSelected: {
+    backgroundColor: '#176B32',
+    borderColor: '#176B32',
+  },
+  roleOptionText: {
+    color: '#365C3D',
+    fontSize: 10,
+    textAlign: 'center',
+  },
+  roleOptionTextSelected: {
+    color: '#FFFFFF',
+  },
+  demoNote: {
+    color: '#758276',
+    fontSize: 10,
+    textAlign: 'center',
+    marginTop: 8,
+  },
   inputGroup: {
     marginBottom: 12,
   },
@@ -231,6 +336,11 @@ const styles = StyleSheet.create({
   forgotPasswordText: {
     color: '#2A7B37',
     fontSize: 13,
+  },
+  loginError: {
+    color: '#B42318',
+    fontSize: 12,
+    marginBottom: 10,
   },
   loginButton: {
     height: 50,
