@@ -17,6 +17,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
 import { registerFactoryOfficer, type FactoryOfficerAccount } from '@/services/account-auth';
+import { register } from '@/services/auth-api';
 
 type IconName = ComponentProps<typeof MaterialCommunityIcons>['name'];
 type FormData = {
@@ -187,6 +188,19 @@ export default function FactoryOfficerRegistrationScreen() {
         },
         form.password,
       );
+      await register({
+        fullName: form.fullName.trim(),
+        email: form.email.trim().toLowerCase(),
+        password: form.password,
+        role: 'factory-officer',
+        nic: form.nic.trim().toUpperCase(),
+        mobile: form.mobile.trim(),
+        address: form.address.trim(),
+        organization: form.organization.trim(),
+        factory: form.factory.trim(),
+        designation: form.designation.trim(),
+        employeeId: result.account.employeeId,
+      });
       setRegisteredAccount(result.account);
       setGeneratedPassword(result.generatedPassword ?? '');
       setStep(5);

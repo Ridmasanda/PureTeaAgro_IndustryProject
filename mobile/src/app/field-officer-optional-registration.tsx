@@ -15,10 +15,61 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
+import { register } from '@/services/auth-api';
+import {
+  clearFieldOfficerDraft,
+  getFieldOfficerDraft,
+} from '@/services/field-officer-registration';
 
 export default function FieldOfficerOptionalRegistrationScreen() {
   const [documentSelected, setDocumentSelected] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
+  const [error, setError] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+
+  const createAccount = async () => {
+    if (!termsAccepted) {
+      setError('Please agree to the terms and conditions to continue.');
+      return;
+    }
+
+    setSubmitting(true);
+    setError('');
+    try {
+      const draft = await getFieldOfficerDraft();
+      if (!draft) {
+        setError('Your registration details were not found. Please start again.');
+        return;
+      }
+
+      await register({
+        fullName: draft.fullName,
+        email: draft.email,
+        password: draft.password,
+        role: 'field-officer',
+        nic: draft.nic,
+        mobile: draft.mobile,
+        address: draft.address,
+        organization: draft.organization,
+        district: draft.district,
+        designation: draft.designation,
+        employeeId: draft.employeeId,
+      });
+      await clearFieldOfficerDraft();
+      router.push({
+        pathname: '/field-officer-registration-success',
+        params: { employeeId: draft.employeeId },
+      });
+    } catch (registrationError) {
+      setError(
+        registrationError instanceof Error
+          ? registrationError.message
+          : 'Registration failed. Please try again.',
+      );
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <ImageBackground
@@ -112,8 +163,8 @@ export default function FieldOfficerOptionalRegistrationScreen() {
             <Pressable
               accessibilityLabel="Create Field Officer Account"
               accessibilityRole="button"
-              disabled={!termsAccepted}
-              onPress={() => router.push('/field-officer-registration-success')}
+              disabled={!termsAccepted || submitting}
+              onPress={createAccount}
               style={({ pressed }) => [
                 styles.createButton,
                 !termsAccepted && styles.createButtonDisabled,
@@ -123,6 +174,11 @@ export default function FieldOfficerOptionalRegistrationScreen() {
                 Create Field Officer Account
               </ThemedText>
             </Pressable>
+            {error ? (
+              <ThemedText accessibilityRole="alert" style={styles.errorText}>
+                {error}
+              </ThemedText>
+            ) : null}
           </ScrollView>
         </KeyboardAvoidingView>
       </SafeAreaView>
@@ -270,6 +326,14 @@ const styles = StyleSheet.create({
     color: '#F8FFF6',
     fontSize: 11,
     lineHeight: 15,
+  },
+  errorText: {
+    color: '#B42318',
+    fontSize: 10,
+    lineHeight: 14,
+    marginHorizontal: 21,
+    marginTop: 8,
+    textAlign: 'center',
   },
   buttonPressed: {
     opacity: 0.86,

@@ -5,6 +5,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useState, type ComponentProps } from 'react';
 import { Image, ImageBackground, Pressable, ScrollView, StyleSheet, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { register } from '@/services/auth-api';
 
 type IconName = ComponentProps<typeof MaterialCommunityIcons>['name'];
 type Form = { fullName: string; nic: string; mobile: string; email: string; address: string; district: string; landName: string; landSize: string; location: string; password: string; confirmPassword: string };
@@ -28,7 +29,28 @@ export default function FarmerRegistrationScreen() {
     if (step === 2 && (!form.password || !form.confirmPassword || form.password !== form.confirmPassword || !agreed)) { setError(form.password !== form.confirmPassword ? 'Passwords do not match.' : 'Complete your password and accept the terms.'); return false; }
     setError(''); return true;
   };
-  const next = () => { if (!validate()) return; if (step < 2) setStep((current) => current + 1); else setDone(true); };
+  const next = async () => {
+    if (!validate()) return;
+    if (step < 2) {
+      setStep((current) => current + 1);
+      return;
+    }
+    try {
+      await register({
+        fullName: form.fullName.trim(),
+        email: form.email.trim().toLowerCase(),
+        password: form.password,
+        role: 'farmer',
+        nic: form.nic.trim().toUpperCase(),
+        mobile: form.mobile.trim(),
+        address: form.address.trim(),
+        district: form.district.trim(),
+      });
+      setDone(true);
+    } catch (registrationError) {
+      setError(registrationError instanceof Error ? registrationError.message : 'Registration failed.');
+    }
+  };
   if (done) return <Success nic={form.nic} />;
   return <ImageBackground source={require('@/assets/images/background.png')} resizeMode="cover" style={styles.container}><StatusBar style="dark" /><View style={styles.overlay} /><SafeAreaView style={styles.safeArea}><View style={styles.header}><Pressable accessibilityLabel="Go back" accessibilityRole="button" onPress={() => step ? setStep((current) => current - 1) : router.back()} style={styles.back}><MaterialCommunityIcons name="arrow-left" size={23} color="#173F25" /></Pressable><Image source={require('@/assets/images/logo.png')} resizeMode="contain" style={styles.logo} /><View style={styles.headerSpace} /></View><ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}><ThemedText type="subtitle" style={styles.title}>Farmer Registration</ThemedText><ThemedText type="small" style={styles.subtitle}>{step === 0 ? 'Create your PureTeaAgro farmer account' : 'Complete your farmer account details'}</ThemedText><Progress step={step} /><ThemedText type="smallBold" style={styles.sectionTitle}>{step + 1}. {steps[step]}</ThemedText>{step === 0 && <Personal form={form} update={update} />}{step === 1 && <Land form={form} update={update} unit={unit} setUnit={setUnit} unitOpen={unitOpen} setUnitOpen={setUnitOpen} />}{step === 2 && <Security form={form} update={update} agreed={agreed} setAgreed={setAgreed} showPassword={showPassword} setShowPassword={setShowPassword} showConfirm={showConfirm} setShowConfirm={setShowConfirm} />}{!!error && <ThemedText type="small" style={styles.error}>{error}</ThemedText>}<Pressable accessibilityRole="button" onPress={next} style={({ pressed }) => [styles.primary, pressed && styles.pressed]}><ThemedText type="smallBold" style={styles.primaryText}>{step === 2 ? 'Create Farmer Account' : 'Next'}</ThemedText><MaterialCommunityIcons name={step === 2 ? 'check' : 'arrow-right'} size={21} color="#FFF" /></Pressable></ScrollView></SafeAreaView></ImageBackground>;
 }
