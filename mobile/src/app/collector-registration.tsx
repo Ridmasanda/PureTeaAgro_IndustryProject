@@ -16,6 +16,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
+import { register } from '@/services/auth-api';
 
 type IconName = ComponentProps<typeof MaterialCommunityIcons>['name'];
 
@@ -97,7 +98,7 @@ export default function CollectorRegistrationScreen() {
     if (error) setError('');
   }
 
-  function submitRegistration() {
+  async function submitRegistration() {
     if (Object.values(details).some((value) => !value.trim())) {
       setError('Please complete all fields before creating your account.');
       return;
@@ -113,7 +114,23 @@ export default function CollectorRegistrationScreen() {
       return;
     }
 
-    router.push('/collector-registration-success');
+    try {
+      await register({
+        fullName: details.fullName.trim(),
+        email: details.email.trim().toLowerCase(),
+        password: details.password,
+        role: 'leaf-collector',
+        nic: details.nic.trim().toUpperCase(),
+        mobile: details.mobile.trim(),
+        address: details.address.trim(),
+        district: details.district.trim(),
+        factory: details.factory.trim(),
+        employeeId: details.collectorId.trim().toUpperCase(),
+      });
+      router.push('/collector-registration-success');
+    } catch (registrationError) {
+      setError(registrationError instanceof Error ? registrationError.message : 'Registration failed.');
+    }
   }
 
   return (

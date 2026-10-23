@@ -16,6 +16,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
+import { register } from '@/services/auth-api';
 
 type IconName = ComponentProps<typeof MaterialCommunityIcons>['name'];
 type AdministratorDetails = {
@@ -98,7 +99,7 @@ export default function AdministratorRegistrationScreen() {
     if (error) setError('');
   }
 
-  function submitRequest() {
+  async function submitRequest() {
     if (Object.values(details).some((value) => !value.trim())) {
       setError('Please complete all fields before submitting your request.');
       return;
@@ -119,7 +120,22 @@ export default function AdministratorRegistrationScreen() {
       setError('Please agree to the terms and conditions to continue.');
       return;
     }
-    router.push('/administrator-registration-success');
+    try {
+      await register({
+        fullName: details.fullName.trim(),
+        email: details.email.trim().toLowerCase(),
+        password: details.password,
+        role: 'administrator',
+        nic: details.nic.trim().toUpperCase(),
+        mobile: details.mobile.trim(),
+        organization: details.organization.trim(),
+        designation: details.designation.trim(),
+        employeeId: details.staffId.trim().toUpperCase(),
+      });
+      router.push('/administrator-registration-success');
+    } catch (registrationError) {
+      setError(registrationError instanceof Error ? registrationError.message : 'Registration failed.');
+    }
   }
 
   return (
