@@ -16,6 +16,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
+import { saveFieldOfficerDraft } from '@/services/field-officer-registration';
 
 type IconName = ComponentProps<typeof MaterialCommunityIcons>['name'];
 
@@ -59,6 +60,43 @@ export default function FieldOfficerRegistrationScreen() {
   const [mobileNumber, setMobileNumber] = useState('');
   const [emailAddress, setEmailAddress] = useState('');
   const [address, setAddress] = useState('');
+  const [error, setError] = useState('');
+  const [saving, setSaving] = useState(false);
+
+  const continueToProfessionalDetails = async () => {
+    const values = [fullName, nicNumber, mobileNumber, emailAddress, address];
+    if (values.some((value) => !value.trim())) {
+      setError('Please complete all personal information fields.');
+      return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailAddress.trim())) {
+      setError('Please enter a valid email address.');
+      return;
+    }
+
+    setSaving(true);
+    setError('');
+    try {
+      await saveFieldOfficerDraft({
+        fullName: fullName.trim(),
+        nic: nicNumber.trim().toUpperCase(),
+        mobile: mobileNumber.trim(),
+        email: emailAddress.trim().toLowerCase(),
+        address: address.trim(),
+        employeeId: '',
+        organization: '',
+        district: '',
+        designation: '',
+        password: '',
+      });
+      router.push('/field-officer-professional-registration');
+    } catch {
+      setError('Unable to save your details. Please try again.');
+    } finally {
+      setSaving(false);
+    }
+  };
 
   return (
     <ImageBackground
@@ -152,13 +190,19 @@ export default function FieldOfficerRegistrationScreen() {
             <Pressable
               accessibilityRole="button"
               accessibilityLabel="Continue to the next registration step"
-              onPress={() => router.push('/field-officer-professional-registration')}
+              disabled={saving}
+              onPress={continueToProfessionalDetails}
               style={({ pressed }) => [styles.nextButton, pressed && styles.nextButtonPressed]}>
               <ThemedText type="smallBold" style={styles.nextButtonText}>
                 Next
               </ThemedText>
               <MaterialCommunityIcons name="arrow-right" size={20} color="#F8FFF6" />
             </Pressable>
+            {error ? (
+              <ThemedText accessibilityRole="alert" style={styles.errorText}>
+                {error}
+              </ThemedText>
+            ) : null}
           </ScrollView>
         </KeyboardAvoidingView>
       </SafeAreaView>
@@ -273,6 +317,14 @@ const styles = StyleSheet.create({
     lineHeight: 15,
     marginLeft: 10,
     paddingVertical: 0,
+  },
+  errorText: {
+    color: '#B42318',
+    fontSize: 10,
+    lineHeight: 14,
+    marginHorizontal: 21,
+    marginTop: 8,
+    textAlign: 'center',
   },
   nextButton: {
     height: 36,

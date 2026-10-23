@@ -10,6 +10,7 @@ const allowedRoles = [
   'administrator',
   'farmer',
   'tea-inspector',
+  'field-officer',
   'factory-officer',
   'leaf-collector',
 ];

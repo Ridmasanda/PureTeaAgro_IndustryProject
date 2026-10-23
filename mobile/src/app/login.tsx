@@ -37,6 +37,8 @@ export default function LoginScreen() {
       router.replace('/tea-inspector-dashboard');
       } else if (user.role === 'factory-officer') {
       router.replace('/factory-officer-dashboard');
+      } else if (user.role === 'field-officer') {
+      router.replace('/field-officer-dashboard');
       } else if (user.role === 'administrator') {
       router.replace('/administrator-home');
       } else {

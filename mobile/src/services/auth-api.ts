@@ -9,6 +9,7 @@ export type AuthRole =
   | 'administrator'
   | 'farmer'
   | 'tea-inspector'
+  | 'field-officer'
   | 'factory-officer'
   | 'leaf-collector';
 

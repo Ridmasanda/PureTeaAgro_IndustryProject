@@ -34,7 +34,7 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ['administrator', 'farmer', 'tea-inspector', 'factory-officer', 'leaf-collector'],
+      enum: ['administrator', 'farmer', 'tea-inspector', 'field-officer', 'factory-officer', 'leaf-collector'],
       required: [true, 'User role is required'],
     },
     address: {

@@ -17,6 +17,8 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
+import { register } from '@/services/auth-api';
+import { getFieldOfficerDraft, saveFieldOfficerDraft } from '@/services/field-officer-registration';
 
 type IconName = ComponentProps<typeof MaterialCommunityIcons>['name'];
 type SelectionKey = 'organization' | 'district' | 'designation';
@@ -114,6 +116,8 @@ export default function FieldOfficerProfessionalRegistrationScreen() {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
   const [openSelection, setOpenSelection] = useState<SelectionKey | null>(null);
+  const [error, setError] = useState('');
+  const [saving, setSaving] = useState(false);
 
   const selectedValues: Record<SelectionKey, string> = {
     organization,
@@ -126,6 +130,45 @@ export default function FieldOfficerProfessionalRegistrationScreen() {
     if (key === 'district') setDistrict(value);
     if (key === 'designation') setDesignation(value);
     setOpenSelection(null);
+  };
+
+  const continueToOptionalDetails = async () => {
+    if (!employeeId.trim() || !organization || !district || !designation) {
+      setError('Please complete all professional information fields.');
+      return;
+    }
+    if (password.length < 8) {
+      setError('Password must be at least 8 characters long.');
+      return;
+    }
+    if (password !== confirmPassword) {
+      setError('Passwords do not match.');
+      return;
+    }
+
+    setSaving(true);
+    setError('');
+    try {
+      const personalDetails = await getFieldOfficerDraft();
+      if (!personalDetails) {
+        setError('Your personal details were not found. Please start again.');
+        return;
+      }
+
+      await saveFieldOfficerDraft({
+        ...personalDetails,
+        employeeId: employeeId.trim().toUpperCase(),
+        organization,
+        district,
+        designation,
+        password,
+      });
+      router.push('/field-officer-optional-registration');
+    } catch {
+      setError('Unable to save your professional details. Please try again.');
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -233,13 +276,19 @@ export default function FieldOfficerProfessionalRegistrationScreen() {
             <Pressable
               accessibilityLabel="Continue to the next registration step"
               accessibilityRole="button"
-              onPress={() => router.push('/field-officer-optional-registration')}
+              disabled={saving}
+              onPress={continueToOptionalDetails}
               style={({ pressed }) => [styles.nextButton, pressed && styles.nextButtonPressed]}>
               <ThemedText type="smallBold" style={styles.nextButtonText}>
                 Next
               </ThemedText>
               <MaterialCommunityIcons name="arrow-right" size={20} color="#F8FFF6" />
             </Pressable>
+            {error ? (
+              <ThemedText accessibilityRole="alert" style={styles.errorText}>
+                {error}
+              </ThemedText>
+            ) : null}
           </ScrollView>
         </KeyboardAvoidingView>
       </SafeAreaView>
@@ -349,6 +398,14 @@ const styles = StyleSheet.create({
     lineHeight: 15,
     marginLeft: 10,
     paddingVertical: 0,
+  },
+  errorText: {
+    color: '#B42318',
+    fontSize: 10,
+    lineHeight: 14,
+    marginHorizontal: 21,
+    marginTop: 8,
+    textAlign: 'center',
   },
   selectText: {
     flex: 1,

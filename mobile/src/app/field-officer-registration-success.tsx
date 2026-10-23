@@ -1,5 +1,5 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import {
   Image,
@@ -13,6 +13,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ThemedText } from '@/components/themed-text';
 
 export default function FieldOfficerRegistrationSuccessScreen() {
+  const { employeeId } = useLocalSearchParams<{ employeeId?: string }>();
+
   return (
     <ImageBackground
       source={require('@/assets/images/background.png')}
@@ -53,7 +55,7 @@ export default function FieldOfficerRegistrationSuccessScreen() {
               <View style={styles.statusDetails}>
                 <ThemedText style={styles.statusLabel}>Officer ID</ThemedText>
                 <ThemedText type="smallBold" style={styles.statusValue}>
-                  FO-00123
+                  {employeeId || 'Pending assignment'}
                 </ThemedText>
               </View>
             </View>
