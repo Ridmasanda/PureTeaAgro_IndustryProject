@@ -44,18 +44,21 @@ const features = [
 
 const testimonials = [
   {
+    image: "/person-1.jpg",
     initials: "NP",
     name: "Nimal Perera",
     role: "Factory Manager",
     quote: "PureTeaAgro makes our factory records simple and organized. It saves a lot of time and effort.",
   },
   {
+    image: "/person-2.jpg",
     initials: "SF",
     name: "Sujani Fernando",
     role: "Assistant Manager",
     quote: "The traceability system gives us confidence in our tea quality and compliance.",
   },
   {
+    image: "/person-3.jpg",
     initials: "KJ",
     name: "Kasun Jayasinghe",
     role: "Estate Manager",
@@ -154,7 +157,10 @@ function App() {
           <div className="testimonial-grid page-width">
             {testimonials.map((testimonial) => (
               <article className="testimonial-card" key={testimonial.name}>
-                <div className="avatar">{testimonial.initials}</div>
+                <div className="avatar">
+                  <img src={testimonial.image} alt="" />
+                  <span>{testimonial.initials}</span>
+                </div>
                 <div>
                   <p>“{testimonial.quote}”</p>
                   <strong>{testimonial.name}</strong>
