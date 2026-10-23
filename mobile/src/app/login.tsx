@@ -142,9 +142,6 @@ export default function LoginScreen() {
                   />
                 </Pressable>
               </View>
-              <ThemedText type="small" style={styles.demoNote}>
-                Demo login: credentials are not verified by a server.
-              </ThemedText>
             </View>
 
             <Pressable
