@@ -1,5 +1,5 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { router, useLocalSearchParams } from 'expo-router';
+import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
 import {
@@ -14,52 +14,38 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
-
-type LoginRole =
-  | 'farmer'
-  | 'field-officer'
-  | 'tea-inspector'
-  | 'factory-officer'
-  | 'collector'
-  | 'administrator';
+import { login as loginWithApi } from '@/services/auth-api';
 
 export default function LoginScreen() {
-  const {
-    id: registeredId,
-    nic: registeredNic,
-    role: registeredRole,
-  } = useLocalSearchParams<{
-    id?: string;
-    nic?: string;
-    role?: LoginRole | 'admin';
-  }>();
-  const initialRole: LoginRole =
-    registeredRole === 'admin'
-      ? 'administrator'
-      : registeredRole ?? 'farmer';
-  const [registeredIdInput, setRegisteredIdInput] = useState(
-    registeredId ?? registeredNic ?? '',
-  );
+  const [emailInput, setEmailInput] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [selectedRole, setSelectedRole] = useState<LoginRole>(initialRole);
   const [loginError, setLoginError] = useState('');
+  const [isSigningIn, setIsSigningIn] = useState(false);
 
   const signIn = async () => {
     setLoginError('');
 
-    if (selectedRole === 'farmer') {
+    setIsSigningIn(true);
+
+    try {
+      const { user } = await loginWithApi(emailInput.trim(), password);
+
+      if (user.role === 'farmer') {
       router.replace('/farmer-dashboard');
-    } else if (selectedRole === 'field-officer') {
-      router.replace('/field-officer-dashboard');
-    } else if (selectedRole === 'tea-inspector') {
+      } else if (user.role === 'tea-inspector') {
       router.replace('/tea-inspector-dashboard');
-    } else if (selectedRole === 'factory-officer') {
+      } else if (user.role === 'factory-officer') {
       router.replace('/factory-officer-dashboard');
-    } else if (selectedRole === 'administrator') {
+      } else if (user.role === 'administrator') {
       router.replace('/administrator-home');
-    } else {
+      } else {
       router.replace('/collector-home');
+      }
+    } catch (error) {
+      setLoginError(error instanceof Error ? error.message : 'Login failed.');
+    } finally {
+      setIsSigningIn(false);
     }
   };
 
@@ -94,83 +80,29 @@ export default function LoginScreen() {
           <View style={styles.formCard}>
             <View style={styles.inputGroup}>
               <View style={styles.labelRow}>
-                <MaterialCommunityIcons name="account-switch-outline" size={18} color="#4D7D4F" />
+                <MaterialCommunityIcons name="email-outline" size={18} color="#4D7D4F" />
                 <ThemedText type="smallBold" style={styles.labelText}>
-                  Login as
-                </ThemedText>
-              </View>
-              <View style={styles.rolePicker}>
-                {([
-                  { role: 'farmer', label: 'Farmer', icon: 'account-tie-hat-outline' },
-                  { role: 'field-officer', label: 'Field Officer', icon: 'clipboard-account-outline' },
-                  { role: 'tea-inspector', label: 'Tea Inspector', icon: 'account-search-outline' },
-                  { role: 'factory-officer', label: 'Factory Officer', icon: 'factory' },
-                  { role: 'collector', label: 'Leaf Collector', icon: 'leaf' },
-                  { role: 'administrator', label: 'Administrator', icon: 'account-cog-outline' },
-                ] as const).map(({ role, label, icon }) => {
-                  const selected = selectedRole === role;
-                  return (
-                    <Pressable
-                      accessibilityRole="button"
-                      accessibilityState={{ selected }}
-                      accessibilityLabel={`Login as ${label}`}
-                      key={role}
-                      onPress={() => {
-                        setSelectedRole(role);
-                      }}
-                      style={[styles.roleOption, selected && styles.roleOptionSelected]}>
-                      <MaterialCommunityIcons
-                        name={icon}
-                        size={15}
-                        color={selected ? '#FFFFFF' : '#4D7D4F'}
-                      />
-                      <ThemedText
-                        type="smallBold"
-                        style={[styles.roleOptionText, selected && styles.roleOptionTextSelected]}>
-                        {label}
-                      </ThemedText>
-                    </Pressable>
-                  );
-                })}
-              </View>
-            </View>
-
-            <View style={styles.inputGroup}>
-              <View style={styles.labelRow}>
-                <MaterialCommunityIcons name="account-outline" size={18} color="#4D7D4F" />
-                <ThemedText type="smallBold" style={styles.labelText}>
-                  Registered ID
+                  Email Address
                 </ThemedText>
               </View>
 
               <View style={styles.inputWrap}>
                 <TextInput
-                  accessibilityLabel={
-                    selectedRole === 'tea-inspector'
-                      ? 'Inspector ID or NIC'
-                      : selectedRole === 'factory-officer'
-                        ? 'Employee ID'
-                        : 'NIC Number'
-                  }
-                  value={registeredIdInput}
+                  accessibilityLabel="Email address"
+                  value={emailInput}
                   onChangeText={(value) => {
-                    setRegisteredIdInput(value);
+                    setEmailInput(value);
                     setLoginError('');
                   }}
-                  placeholder={
-                    selectedRole === 'tea-inspector'
-                      ? 'Enter your Inspector ID or NIC'
-                      : selectedRole === 'factory-officer'
-                        ? 'Enter your Employee ID'
-                        : 'Enter your NIC number'
-                  }
+                  placeholder="Enter your email address"
                   placeholderTextColor="#8A918F"
                   style={styles.input}
-                  autoCapitalize="characters"
+                  keyboardType="email-address"
+                  autoCapitalize="none"
                   autoCorrect={false}
                   returnKeyType="next"
                 />
-                <MaterialCommunityIcons name="card-account-details-outline" size={18} color="#4D7D4F" />
+                <MaterialCommunityIcons name="email-outline" size={18} color="#4D7D4F" />
               </View>
             </View>
 
@@ -364,11 +296,6 @@ const styles = StyleSheet.create({
   },
   inputGroup: {
     marginBottom: 12,
-  },
-  rolePicker: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 7,
   },
   roleOption: {
     minHeight: 40,
