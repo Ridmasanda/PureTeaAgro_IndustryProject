@@ -4,6 +4,7 @@ const dns = require('dns');
 const express = require('express');
 const cors = require('cors');
 const connectDB = require('./config/db');
+const authRoutes = require('./routes/auth');
 
 const dnsServers = (process.env.DNS_SERVERS || '8.8.8.8,1.1.1.1')
   .split(',')
@@ -16,11 +17,29 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
+app.use('/api/auth', authRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({
     success: true,
     message: 'PureTeaAgro API is running',
+  });
+});
+
+app.use((error, _req, res, _next) => {
+  console.error(error);
+
+  if (error.name === 'ValidationError') {
+    return res.status(400).json({
+      success: false,
+      message: 'Request validation failed.',
+      errors: Object.values(error.errors).map((validationError) => validationError.message),
+    });
+  }
+
+  return res.status(500).json({
+    success: false,
+    message: 'Internal server error.',
   });
 });
 
