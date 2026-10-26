@@ -1,20 +1,14 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import { useEffect, useState } from 'react';
 import { Image, ImageBackground, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
+import { getStoredUser, type AuthUser } from '@/services/auth-api';
 
 type IconName = React.ComponentProps<typeof MaterialCommunityIcons>['name'];
-
-const personalInformation: [IconName, string, string][] = [
-  ['account-outline', 'Full Name', 'Saman Kumara'],
-  ['card-account-details-outline', 'NIC', 'Not provided'],
-  ['phone-outline', 'Mobile Number', 'Not provided'],
-  ['home-outline', 'Address', 'Not provided'],
-  ['map-marker-outline', 'District', 'Not provided'],
-];
 
 const profileActions: [IconName, string][] = [
   ['square-edit-outline', 'Edit Personal Details'],
@@ -25,6 +19,30 @@ const profileActions: [IconName, string][] = [
 ];
 
 export default function FarmerProfileScreen() {
+  const [user, setUser] = useState<AuthUser | null>(null);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    getStoredUser().then((storedUser) => {
+      if (isMounted) {
+        setUser(storedUser);
+      }
+    });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const personalInformation: [IconName, string, string][] = [
+    ['account-outline', 'Full Name', user?.fullName || 'Not provided'],
+    ['card-account-details-outline', 'NIC', user?.nic || 'Not provided'],
+    ['phone-outline', 'Mobile Number', user?.mobile || 'Not provided'],
+    ['home-outline', 'Address', user?.address || 'Not provided'],
+    ['map-marker-outline', 'District', user?.district || 'Not provided'],
+  ];
+
   return (
     <ImageBackground source={require('@/assets/images/background.png')} resizeMode="cover" style={styles.container}>
       <StatusBar style="dark" />
@@ -45,7 +63,7 @@ export default function FarmerProfileScreen() {
           <View style={styles.profileHero}>
             <View style={styles.avatar}><MaterialCommunityIcons name="account" size={45} color="#168B3E" /></View>
             <View style={styles.heroDetails}>
-              <ThemedText type="smallBold" style={styles.name}>Saman Kumara</ThemedText>
+              <ThemedText type="smallBold" style={styles.name}>{user?.fullName || 'Farmer'}</ThemedText>
               <ThemedText type="small" style={styles.farmerId}>Farmer ID: FRM-00124</ThemedText>
               <View style={styles.verified}><MaterialCommunityIcons name="check-circle" size={13} color="#168B3E" /><ThemedText type="smallBold" style={styles.verifiedText}>Verified</ThemedText></View>
             </View>

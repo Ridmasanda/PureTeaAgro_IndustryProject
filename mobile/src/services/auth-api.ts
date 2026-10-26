@@ -18,6 +18,10 @@ export type AuthUser = {
   fullName: string;
   email: string;
   role: AuthRole;
+  nic?: string;
+  mobile?: string;
+  address?: string;
+  district?: string;
 };
 
 export type AuthResponse = {

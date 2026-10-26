@@ -1,10 +1,12 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import { useEffect, useState } from 'react';
 import { Image, ImageBackground, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ThemedText } from '@/components/themed-text';
+import { getStoredUser } from '@/services/auth-api';
 
 type IconName = React.ComponentProps<typeof MaterialCommunityIcons>['name'];
 
@@ -23,6 +25,22 @@ const actions = [
 ];
 
 export default function FarmerDashboardScreen() {
+  const [userName, setUserName] = useState('Farmer');
+
+  useEffect(() => {
+    let isMounted = true;
+
+    getStoredUser().then((user) => {
+      if (isMounted && user?.fullName) {
+        setUserName(user.fullName);
+      }
+    });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   return (
     <ImageBackground source={require('@/assets/images/background.png')} resizeMode="cover" style={styles.container}>
       <StatusBar style="dark" />
@@ -41,7 +59,7 @@ export default function FarmerDashboardScreen() {
           </View>
 
           <ThemedText type="small" style={styles.greeting}>Good Morning,</ThemedText>
-          <ThemedText type="subtitle" style={styles.name}>Saman Kumara <ThemedText style={styles.wave}>👋</ThemedText></ThemedText>
+          <ThemedText type="subtitle" style={styles.name}>{userName} <ThemedText style={styles.wave}>👋</ThemedText></ThemedText>
           <ThemedText type="small" style={styles.role}>Farmer  •  FRM-00124</ThemedText>
 
           <Pressable accessibilityRole="button" onPress={() => router.push('/farmer-profile')} style={({ pressed }) => [styles.profileCard, pressed && styles.pressed]}>
