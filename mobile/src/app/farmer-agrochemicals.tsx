@@ -27,8 +27,12 @@ export default function FarmerAgrochemicalsScreen() {
   const [showApproved, setShowApproved] = useState(false);
   const [land, setLand] = useState('Green Valley Tea Land');
   const [chemicalType, setChemicalType] = useState<'Fertilizer' | 'Pesticide'>('Fertilizer');
+  const [product, setProduct] = useState('GreenGrow Fertilizer');
   const [quantity, setQuantity] = useState('5');
+  const [unit, setUnit] = useState('kg');
   const [date, setDate] = useState('19 Sep 2026');
+  const [time, setTime] = useState('Morning');
+  const [reason, setReason] = useState('Pest or Insects');
   const [submitted, setSubmitted] = useState(false);
 
   if (showHistory) {
@@ -47,10 +51,18 @@ export default function FarmerAgrochemicalsScreen() {
         setLand={setLand}
         chemicalType={chemicalType}
         setChemicalType={setChemicalType}
+        product={product}
+        setProduct={setProduct}
         quantity={quantity}
         setQuantity={setQuantity}
+        unit={unit}
+        setUnit={setUnit}
         date={date}
         setDate={setDate}
+        time={time}
+        setTime={setTime}
+        reason={reason}
+        setReason={setReason}
         onBack={() => setStep(step === 0 ? null : ((step - 1) as Step))}
         onNext={() => step === 5 ? setSubmitted(true) : setStep((step + 1) as Step)}
         submitted={submitted}
@@ -263,16 +275,18 @@ function ActionButton({ icon, label, primary, onPress }: { icon: IconName; label
 }
 
 function RecordFlow({
-  step, land, setLand, chemicalType, setChemicalType, quantity, setQuantity, date, setDate, onBack, onNext, submitted, onClose,
+  step, land, setLand, chemicalType, setChemicalType, product, setProduct, quantity, setQuantity, unit, setUnit, date, setDate, time, setTime, reason, setReason, onBack, onNext, submitted, onClose,
 }: {
   step: Step; land: string; setLand: (value: string) => void; chemicalType: 'Fertilizer' | 'Pesticide'; setChemicalType: (value: 'Fertilizer' | 'Pesticide') => void;
-  quantity: string; setQuantity: (value: string) => void; date: string; setDate: (value: string) => void; onBack: () => void; onNext: () => void; submitted: boolean; onClose: () => void;
+  product: string; setProduct: (value: string) => void; quantity: string; setQuantity: (value: string) => void; unit: string; setUnit: (value: string) => void;
+  date: string; setDate: (value: string) => void; time: string; setTime: (value: string) => void; reason: string; setReason: (value: string) => void;
+  onBack: () => void; onNext: () => void; submitted: boolean; onClose: () => void;
 }) {
   if (submitted) {
-    return <ImageBackground source={require('@/assets/images/background.png')} resizeMode="cover" style={styles.container}><View pointerEvents="none" style={styles.backgroundOverlay} /><SafeAreaView style={styles.success}><MaterialCommunityIcons name="check-circle" size={72} color={green} /><ThemedText type="subtitle" style={styles.successTitle}>Record Submitted</ThemedText><ThemedText type="small" style={styles.successText}>Your agrochemical application was submitted for verification.</ThemedText><Pressable onPress={onClose} style={styles.primaryButton}><ThemedText type="smallBold" style={styles.primaryButtonText}>Back to Overview</ThemedText></Pressable></SafeAreaView></ImageBackground>;
+    return <ImageBackground source={require('@/assets/images/background.png')} resizeMode="cover" style={styles.container}><StatusBar style="dark" /><View pointerEvents="none" style={styles.backgroundOverlay} /><SafeAreaView style={styles.success}><MaterialCommunityIcons name="check-circle" size={78} color={green} /><ThemedText type="subtitle" style={styles.successTitle}>Record Saved!</ThemedText><ThemedText type="small" style={styles.successText}>Your application has been saved successfully.</ThemedText><View style={styles.referenceCard}><ThemedText type="small" style={styles.muted}>Record Reference</ThemedText><ThemedText type="smallBold" style={styles.referenceText}>AGR-000124</ThemedText><MaterialCommunityIcons name="content-copy" size={18} color={green} /></View><View style={styles.waitingCard}><MaterialCommunityIcons name="clock-outline" size={20} color="#6D8C00" /><View><ThemedText type="smallBold" style={styles.waitingTitle}>Waiting for Review</ThemedText><ThemedText type="small" style={styles.muted}>Your record will be checked soon.</ThemedText></View></View><Pressable onPress={onClose} style={styles.primaryButton}><MaterialCommunityIcons name="home" size={18} color="#FFF" /><ThemedText type="smallBold" style={styles.primaryButtonText}>Back to Home</ThemedText></Pressable></SafeAreaView></ImageBackground>;
   }
 
-  const titles: Record<Step, string> = { 0: 'Select Tea Land', 1: 'Select Agrochemical', 2: 'Enter Quantity', 3: 'Application Date', 4: 'Additional Details', 5: 'Review & Submit' };
+  const titles: Record<Step, string> = { 0: 'Which land did you use it on?', 1: 'What did you use?', 2: 'How much did you use?', 3: 'When was it used?', 4: 'Why did you use it?', 5: 'Check your record' };
   return (
     <ImageBackground source={require('@/assets/images/background.png')} resizeMode="cover" style={styles.container}>
       <StatusBar style="dark" />
@@ -282,11 +296,11 @@ function RecordFlow({
           <Header title={titles[step]} onBack={onBack} />
           <View style={styles.progress}><View style={[styles.progressFill, { width: `${((step + 1) / 6) * 100}%` }]} /></View>
           {step === 0 && <LandStep land={land} setLand={setLand} />}
-          {step === 1 && <ChemicalStep chemicalType={chemicalType} setChemicalType={setChemicalType} />}
-          {step === 2 && <QuantityStep quantity={quantity} setQuantity={setQuantity} />}
-          {step === 3 && <DateStep date={date} setDate={setDate} />}
-          {step === 4 && <DetailsStep />}
-          {step === 5 && <ReviewStep land={land} chemicalType={chemicalType} quantity={quantity} date={date} />}
+          {step === 1 && <ChemicalStep chemicalType={chemicalType} setChemicalType={setChemicalType} product={product} setProduct={setProduct} />}
+          {step === 2 && <QuantityStep quantity={quantity} setQuantity={setQuantity} unit={unit} setUnit={setUnit} />}
+          {step === 3 && <DateStep date={date} setDate={setDate} time={time} setTime={setTime} />}
+          {step === 4 && <DetailsStep reason={reason} setReason={setReason} />}
+          {step === 5 && <ReviewStep land={land} chemicalType={chemicalType} product={product} quantity={quantity} unit={unit} date={date} time={time} reason={reason} />}
           <Pressable accessibilityRole="button" onPress={onNext} style={({ pressed }) => [styles.primaryButton, pressed && styles.pressed]}>
             <ThemedText type="smallBold" style={styles.primaryButtonText}>{step === 5 ? 'Submit Record' : 'Next'}</ThemedText>
             <MaterialCommunityIcons name={step === 5 ? 'send' : 'arrow-right'} size={20} color="#FFF" />
@@ -302,24 +316,26 @@ function LandStep({ land, setLand }: { land: string; setLand: (value: string) =>
   return <View style={styles.stepBody}><ThemedText type="smallBold" style={styles.fieldLabel}>Your tea lands</ThemedText>{['Green Valley Tea Land', 'Hilltop Tea Land'].map((name, index) => <Pressable key={name} onPress={() => setLand(name)} style={[styles.landCard, land === name && styles.selectedCard]}><View style={styles.landImage}><MaterialCommunityIcons name="image-outline" size={30} color="#6BA777" /></View><View style={styles.landCopy}><ThemedText type="smallBold">{name}</ThemedText><ThemedText type="small" style={styles.muted}>{index === 0 ? '6.5 hectares' : '12 hectares'}</ThemedText><View style={styles.sector}><ThemedText type="small" style={styles.sectorText}>{index === 0 ? 'Small Sector' : 'Medium Sector'}</ThemedText></View></View><MaterialCommunityIcons name={land === name ? 'radiobox-marked' : 'radiobox-blank'} size={22} color={land === name ? green : '#B6D8C0'} /></Pressable>)}</View>;
 }
 
-function ChemicalStep({ chemicalType, setChemicalType }: { chemicalType: 'Fertilizer' | 'Pesticide'; setChemicalType: (value: 'Fertilizer' | 'Pesticide') => void }) {
-  return <View style={styles.stepBody}><ThemedText type="smallBold" style={styles.fieldLabel}>Chemical Category</ThemedText><View style={styles.segment}><Pressable onPress={() => setChemicalType('Fertilizer')} style={[styles.segmentItem, chemicalType === 'Fertilizer' && styles.segmentActive]}><ThemedText type="smallBold" style={chemicalType === 'Fertilizer' ? styles.segmentTextActive : styles.muted}>Fertilizer</ThemedText></Pressable><Pressable onPress={() => setChemicalType('Pesticide')} style={[styles.segmentItem, chemicalType === 'Pesticide' && styles.segmentActive]}><ThemedText type="smallBold" style={chemicalType === 'Pesticide' ? styles.segmentTextActive : styles.muted}>Pesticide</ThemedText></Pressable></View><Field label="Chemical Name" value="Product A (Approved)" /><Field label="Product / Brand" value="Brand A" /><Field label="Active Ingredient" value="Active Ingredient A" /><View style={styles.notice}><MaterialCommunityIcons name="shield-check" size={20} color={green} /><ThemedText type="small" style={styles.noticeText}>Only approved chemicals can be selected.</ThemedText></View></View>;
+function ChemicalStep({ chemicalType, setChemicalType, product, setProduct }: { chemicalType: 'Fertilizer' | 'Pesticide'; setChemicalType: (value: 'Fertilizer' | 'Pesticide') => void; product: string; setProduct: (value: string) => void }) {
+  const products = chemicalType === 'Fertilizer' ? ['GreenGrow Fertilizer', 'RootBoost Fertilizer'] : ['LeafGuard Pest Control', 'BioShield Pest Control'];
+  return <View style={styles.stepBody}><ThemedText type="smallBold" style={styles.fieldLabel}>What did you use?</ThemedText><View style={styles.segment}><Pressable onPress={() => setChemicalType('Fertilizer')} style={[styles.segmentItem, chemicalType === 'Fertilizer' && styles.segmentActive]}><MaterialCommunityIcons name="flask" size={20} color={chemicalType === 'Fertilizer' ? '#FFF' : green} /><ThemedText type="smallBold" style={chemicalType === 'Fertilizer' ? styles.segmentTextActive : styles.muted}>Fertilizer</ThemedText></Pressable><Pressable onPress={() => setChemicalType('Pesticide')} style={[styles.segmentItem, chemicalType === 'Pesticide' && styles.segmentActive]}><MaterialCommunityIcons name="bug-outline" size={20} color={chemicalType === 'Pesticide' ? '#FFF' : green} /><ThemedText type="smallBold" style={chemicalType === 'Pesticide' ? styles.segmentTextActive : styles.muted}>Pest Control</ThemedText></Pressable></View><ThemedText type="smallBold" style={styles.fieldLabel}>Select an approved product</ThemedText>{products.map((name) => <Pressable key={name} onPress={() => setProduct(name)} style={[styles.productCard, product === name && styles.selectedCard]}><View style={styles.productIcon}><MaterialCommunityIcons name="flask-outline" size={24} color={green} /></View><View style={styles.landCopy}><ThemedText type="smallBold">{name}</ThemedText><ThemedText type="small" style={styles.muted}>(Approved)</ThemedText></View><MaterialCommunityIcons name={product === name ? 'radiobox-marked' : 'radiobox-blank'} size={22} color={product === name ? green : '#B6D8C0'} /></Pressable>)}</View>;
 }
 
-function QuantityStep({ quantity, setQuantity }: { quantity: string; setQuantity: (value: string) => void }) {
-  return <View style={styles.stepBody}><Field label="Quantity" value={quantity} onChangeText={setQuantity} suffix="kg" /><Field label="Application Area (Optional)" value="" placeholder="e.g. 0.5 hectares" /></View>;
+function QuantityStep({ quantity, setQuantity, unit, setUnit }: { quantity: string; setQuantity: (value: string) => void; unit: string; setUnit: (value: string) => void }) {
+  return <View style={styles.stepBody}><ThemedText type="smallBold" style={styles.fieldLabel}>Enter quantity and unit</ThemedText><View style={styles.quantityControl}><Pressable onPress={() => setQuantity(String(Math.max(1, Number(quantity) - 1)))} style={styles.quantityButton}><ThemedText style={styles.quantityButtonText}>−</ThemedText></Pressable><ThemedText style={styles.quantityValue}>{quantity}</ThemedText><Pressable onPress={() => setQuantity(String(Number(quantity) + 1))} style={styles.quantityButton}><ThemedText style={styles.quantityButtonText}>+</ThemedText></Pressable></View><View style={styles.unitRow}>{['kg', 'L', 'packs'].map((item) => <Pressable key={item} onPress={() => setUnit(item)} style={[styles.unitButton, unit === item && styles.unitButtonActive]}><ThemedText type="smallBold" style={unit === item ? styles.segmentTextActive : styles.muted}>{item}</ThemedText></Pressable>)}</View><Field label="Application area (optional)" value="" placeholder="Where did you apply it?" /></View>;
 }
 
-function DateStep({ date, setDate }: { date: string; setDate: (value: string) => void }) {
-  return <View style={styles.stepBody}><Field label="Application Date" value={date} onChangeText={setDate} icon="calendar-month-outline" /><Field label="Time (Optional)" value="" placeholder="Select time" icon="clock-outline" /></View>;
+function DateStep({ date, setDate, time, setTime }: { date: string; setDate: (value: string) => void; time: string; setTime: (value: string) => void }) {
+  return <View style={styles.stepBody}><ThemedText type="smallBold" style={styles.fieldLabel}>Choose an application date</ThemedText>{['Today', 'Yesterday', 'Choose Date'].map((item) => <Pressable key={item} onPress={() => setDate(item === 'Today' ? 'Today' : item === 'Yesterday' ? '18 Sep 2026' : date)} style={[styles.choiceRow, (item === 'Today' && date === 'Today') && styles.choiceRowActive]}><MaterialCommunityIcons name="calendar-month-outline" size={19} color={date === 'Today' && item === 'Today' ? '#FFF' : green} /><ThemedText type="smallBold" style={date === 'Today' && item === 'Today' ? styles.segmentTextActive : styles.muted}>{item}</ThemedText></Pressable>)}<ThemedText type="smallBold" style={styles.fieldLabel}>Time of day (optional)</ThemedText><View style={styles.timeRow}>{['Morning', 'Afternoon', 'Evening'].map((item) => <Pressable key={item} onPress={() => setTime(item)} style={[styles.timeButton, time === item && styles.segmentActive]}><MaterialCommunityIcons name={item === 'Morning' ? 'weather-sunny' : item === 'Afternoon' ? 'white-balance-sunny' : 'weather-night'} size={17} color={time === item ? '#FFF' : green} /><ThemedText type="smallBold" style={time === item ? styles.segmentTextActive : styles.muted}>{item}</ThemedText></Pressable>)}</View></View>;
 }
 
-function DetailsStep() {
-  return <View style={styles.stepBody}><ThemedText type="smallBold" style={styles.fieldLabel}>Purpose of Application</ThemedText><Field label="" value="Disease Control" suffix="⌄" /><ThemedText type="smallBold" style={styles.fieldLabel}>Upload Purchase Receipt</ThemedText><Upload label="Upload Receipt" /><ThemedText type="smallBold" style={styles.fieldLabel}>Upload Chemical Label Photo</ThemedText><Upload label="Upload Label Photo" /><Field label="Notes (Optional)" value="" placeholder="Add any additional notes..." /></View>;
+function DetailsStep({ reason, setReason }: { reason: string; setReason: (value: string) => void }) {
+  const reasons = ['Pest or Insects', 'Plant Disease', 'Weeds', 'Help Plants Grow', 'Other'];
+  return <View style={styles.stepBody}><ThemedText type="smallBold" style={styles.fieldLabel}>Choose one option</ThemedText><View style={styles.reasonGrid}>{reasons.map((item, index) => <Pressable key={item} onPress={() => setReason(item)} style={[styles.reasonCard, reason === item && styles.selectedCard]}><MaterialCommunityIcons name={index === 0 ? 'bug-outline' : index === 1 ? 'weather-lightning' : index === 2 ? 'grass' : index === 3 ? 'sprout-outline' : 'dots-horizontal'} size={24} color={reason === item ? green : '#4D8A63'} /><ThemedText type="smallBold" style={styles.reasonText}>{item}</ThemedText></Pressable>)}</View><Pressable style={styles.upload}><MaterialCommunityIcons name="camera-outline" size={23} color={green} /><View><ThemedText type="smallBold">Add photo (optional)</ThemedText><ThemedText type="small" style={styles.muted}>Take or choose a photo</ThemedText></View><MaterialCommunityIcons name="chevron-right" size={20} color={green} /></Pressable><Pressable style={styles.upload}><MaterialCommunityIcons name="microphone-outline" size={23} color={green} /><View><ThemedText type="smallBold">Add voice note (optional)</ThemedText><ThemedText type="small" style={styles.muted}>Tap to record</ThemedText></View><MaterialCommunityIcons name="chevron-right" size={20} color={green} /></Pressable></View>;
 }
 
-function ReviewStep({ land, chemicalType, quantity, date }: { land: string; chemicalType: string; quantity: string; date: string }) {
-  return <View style={styles.reviewCard}><ReviewRow icon="map-marker-outline" label="Land" value={land} /><ReviewRow icon="flask-outline" label="Chemical" value={`${chemicalType} • Product A`} /><ReviewRow icon="scale-balance" label="Quantity" value={`${quantity} kg`} /><ReviewRow icon="calendar-month-outline" label="Date" value={date} /><ReviewRow icon="shield-check-outline" label="Purpose" value="Disease Control" /></View>;
+function ReviewStep({ land, chemicalType, product, quantity, unit, date, time, reason }: { land: string; chemicalType: string; product: string; quantity: string; unit: string; date: string; time: string; reason: string }) {
+  return <View style={styles.reviewCard}><ReviewRow icon="map-marker-outline" label="Tea Land" value={`${land} • 6.5 hectares`} /><ReviewRow icon="flask-outline" label="Chemical" value={`${chemicalType} • ${product}`} /><ReviewRow icon="scale-balance" label="Amount" value={`${quantity} ${unit}`} /><ReviewRow icon="calendar-month-outline" label="Date" value={`${date} • ${time}`} /><ReviewRow icon="shield-check-outline" label="Reason" value={reason} /></View>;
 }
 
 function ReviewRow({ icon, label, value }: { icon: IconName; label: string; value: string }) {
@@ -328,10 +344,6 @@ function ReviewRow({ icon, label, value }: { icon: IconName; label: string; valu
 
 function Field({ label, value, onChangeText, placeholder, suffix, icon }: { label: string; value: string; onChangeText?: (value: string) => void; placeholder?: string; suffix?: string; icon?: IconName }) {
   return <View style={styles.field}><ThemedText type="smallBold" style={styles.fieldLabel}>{label}</ThemedText><View style={styles.inputWrap}>{icon && <MaterialCommunityIcons name={icon} size={20} color="#527568" />}<TextInput value={value} onChangeText={onChangeText} placeholder={placeholder} placeholderTextColor="#9AB4A6" style={styles.input} /><ThemedText type="small" style={styles.suffix}>{suffix}</ThemedText></View></View>;
-}
-
-function Upload({ label }: { label: string }) {
-  return <Pressable style={styles.upload}><MaterialCommunityIcons name="cloud-upload-outline" size={23} color={green} /><View><ThemedText type="smallBold">{label}</ThemedText><ThemedText type="small" style={styles.muted}>JPG, PNG or PDF</ThemedText></View></Pressable>;
 }
 
 function BottomNav({ active }: { active: string }) {
@@ -383,6 +395,8 @@ const styles = StyleSheet.create({
   selectedCard: { borderColor: green, backgroundColor: '#F3FFF5' },
   landImage: { width: 62, height: 62, borderRadius: 9, backgroundColor: '#DCEED7', alignItems: 'center', justifyContent: 'center' },
   landCopy: { flex: 1, gap: 2 },
+  productCard: { borderWidth: 1, borderColor: '#D4E9D9', borderRadius: 12, padding: 10, flexDirection: 'row', alignItems: 'center', gap: 10, backgroundColor: '#FFF' },
+  productIcon: { width: 43, height: 43, borderRadius: 9, backgroundColor: '#DCEED7', alignItems: 'center', justifyContent: 'center' },
   muted: { color: '#6E8B7C', fontSize: 12 },
   sector: { backgroundColor: '#DDF5E1', borderRadius: 10, paddingHorizontal: 8, alignSelf: 'flex-start' },
   sectorText: { color: green, fontSize: 10 },
@@ -390,6 +404,20 @@ const styles = StyleSheet.create({
   segmentItem: { flex: 1, height: 43, borderWidth: 1, borderColor: '#D1E6D7', borderRadius: 9, alignItems: 'center', justifyContent: 'center' },
   segmentActive: { backgroundColor: green, borderColor: green },
   segmentTextActive: { color: '#FFF' },
+  quantityControl: { minHeight: 62, borderWidth: 1, borderColor: '#D1E6D7', borderRadius: 11, backgroundColor: '#FFF', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 22 },
+  quantityButton: { width: 25, height: 25, borderRadius: 14, backgroundColor: green, alignItems: 'center', justifyContent: 'center' },
+  quantityButtonText: { color: '#FFF', fontSize: 20, lineHeight: 22 },
+  quantityValue: { color: '#244B39', fontSize: 25, fontWeight: '700' },
+  unitRow: { flexDirection: 'row', gap: 8 },
+  unitButton: { flex: 1, minHeight: 39, borderRadius: 9, backgroundColor: '#E8F8EA', alignItems: 'center', justifyContent: 'center' },
+  unitButtonActive: { backgroundColor: green },
+  choiceRow: { minHeight: 42, borderWidth: 1, borderColor: '#D1E6D7', borderRadius: 9, backgroundColor: '#FFF', flexDirection: 'row', alignItems: 'center', gap: 9, paddingHorizontal: 12 },
+  choiceRowActive: { backgroundColor: green, borderColor: green },
+  timeRow: { flexDirection: 'row', gap: 7 },
+  timeButton: { flex: 1, minHeight: 42, borderWidth: 1, borderColor: '#D1E6D7', borderRadius: 9, backgroundColor: '#E8F8EA', alignItems: 'center', justifyContent: 'center', gap: 2 },
+  reasonGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  reasonCard: { width: '48%', minHeight: 67, borderWidth: 1, borderColor: '#D1E6D7', borderRadius: 10, backgroundColor: '#FFF', alignItems: 'center', justifyContent: 'center', gap: 3, padding: 5 },
+  reasonText: { color: '#315D4A', fontSize: 10, textAlign: 'center' },
   field: { gap: 5 },
   inputWrap: { minHeight: 45, borderWidth: 1, borderColor: '#D1E6D7', borderRadius: 9, backgroundColor: '#FFF', flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12 },
   input: { flex: 1, color: '#244B39', fontSize: 13, paddingVertical: 10 },
@@ -443,4 +471,8 @@ const styles = StyleSheet.create({
   success: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 30 },
   successTitle: { color: '#173F25', textAlign: 'center', marginTop: 16 },
   successText: { color: '#597467', textAlign: 'center', marginTop: 8, marginBottom: 26 },
+  referenceCard: { width: '100%', borderWidth: 1, borderColor: '#D1E6D7', borderRadius: 11, backgroundColor: '#FFF', padding: 12, marginBottom: 10 },
+  referenceText: { color: '#174B32', marginTop: 3 },
+  waitingCard: { width: '100%', borderRadius: 11, backgroundColor: '#F0FAD9', padding: 12, flexDirection: 'row', gap: 9, marginBottom: 20 },
+  waitingTitle: { color: '#3E5B1B', marginBottom: 2 },
 });
