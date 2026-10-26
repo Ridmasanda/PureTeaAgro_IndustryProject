@@ -16,12 +16,20 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ThemedText } from '@/components/themed-text';
 import { login as loginWithApi } from '@/services/auth-api';
 
+const languages = ['English', 'Sinhala', 'Tamil'] as const;
+
 export default function LoginScreen() {
   const [emailInput, setEmailInput] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState('');
   const [isSigningIn, setIsSigningIn] = useState(false);
+  const [language, setLanguage] = useState<(typeof languages)[number]>('English');
+
+  const changeLanguage = () => {
+    const currentIndex = languages.indexOf(language);
+    setLanguage(languages[(currentIndex + 1) % languages.length]);
+  };
 
   const signIn = async () => {
     setLoginError('');
@@ -61,9 +69,26 @@ export default function LoginScreen() {
       <View style={styles.overlay} />
 
       <SafeAreaView style={styles.safeArea}>
-        <Pressable accessibilityRole="button" onPress={() => router.back()} style={styles.backButton}>
-          <MaterialCommunityIcons name="chevron-left" size={24} color="#3A4D35" />
-        </Pressable>
+        <View style={styles.topBar}>
+          <Pressable
+            accessibilityLabel="Go back"
+            accessibilityRole="button"
+            onPress={() => router.back()}
+            style={styles.backButton}>
+            <MaterialCommunityIcons name="chevron-left" size={24} color="#3A4D35" />
+          </Pressable>
+
+          <Pressable
+            accessibilityLabel={`Change language. Current language: ${language}`}
+            accessibilityRole="button"
+            onPress={changeLanguage}
+            style={({ pressed }) => [styles.languageButton, pressed && styles.languageButtonPressed]}>
+            <MaterialCommunityIcons name="translate" size={15} color="#2E7A33" />
+            <ThemedText type="smallBold" style={styles.languageButtonText}>
+              {language.slice(0, 2).toUpperCase()}
+            </ThemedText>
+          </Pressable>
+        </View>
 
         <ScrollView
           bounces={false}
@@ -211,6 +236,13 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 14,
   },
+  topBar: {
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 8,
+  },
   backButton: {
     width: 40,
     height: 40,
@@ -224,6 +256,29 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     shadowOffset: { width: 0, height: 5 },
     elevation: 2,
+  },
+  languageButton: {
+    minWidth: 58,
+    height: 32,
+    borderRadius: 16,
+    paddingHorizontal: 9,
+    backgroundColor: 'rgba(255,255,255,0.92)',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 5,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 5 },
+    elevation: 2,
+  },
+  languageButtonPressed: {
+    opacity: 0.75,
+  },
+  languageButtonText: {
+    color: '#2E7A33',
+    fontSize: 11,
   },
   content: {
     flexGrow: 1,
