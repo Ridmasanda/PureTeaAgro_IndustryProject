@@ -143,9 +143,26 @@ function ApprovedChemicals({ onBack }: { onBack: () => void }) {
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<'All' | 'Pesticide' | 'Fertilizer'>('All');
   const chemicals = [
-    { name: 'Product A', type: 'Pesticide', ingredient: 'Ingredient A', waiting: '15 days', icon: 'flask-round-bottom' as IconName },
-    { name: 'Fertilizer B', type: 'Fertilizer', ingredient: 'Ingredient B', waiting: '7 days', icon: 'flask' as IconName },
-    { name: 'Product C', type: 'Pesticide', ingredient: 'Ingredient C', waiting: '10 days', icon: 'flask-round-bottom' as IconName },
+    { name: 'Brunolium/Tar Acids', type: 'Pesticide', ingredient: 'Brunolium/Tar Acids', waiting: 'As directed', icon: 'flask-round-bottom' as IconName },
+    { name: 'Calcium hydroxide', type: 'Pesticide', ingredient: 'Calcium hydroxide', waiting: 'As directed', icon: 'flask-round-bottom' as IconName },
+    { name: 'Chlorantraniliprole', type: 'Pesticide', ingredient: 'Chlorantraniliprole', waiting: 'As directed', icon: 'flask-round-bottom' as IconName },
+    { name: 'Copper hydroxide', type: 'Pesticide', ingredient: 'Copper hydroxide', waiting: 'As directed', icon: 'flask-round-bottom' as IconName },
+    { name: 'Copper oxide', type: 'Pesticide', ingredient: 'Copper oxide', waiting: 'As directed', icon: 'flask-round-bottom' as IconName },
+    { name: 'Copper sulphate', type: 'Pesticide', ingredient: 'Copper sulphate', waiting: 'As directed', icon: 'flask-round-bottom' as IconName },
+    { name: 'Diazinon', type: 'Pesticide', ingredient: 'Diazinon', waiting: 'As directed', icon: 'flask-round-bottom' as IconName },
+    { name: 'Diuron', type: 'Pesticide', ingredient: 'Diuron', waiting: 'As directed', icon: 'flask-round-bottom' as IconName },
+    { name: 'Emamectin Benzoate', type: 'Pesticide', ingredient: 'Emamectin Benzoate', waiting: 'As directed', icon: 'flask-round-bottom' as IconName },
+    { name: 'Fipronil', type: 'Pesticide', ingredient: 'Fipronil', waiting: 'As directed', icon: 'flask-round-bottom' as IconName },
+    { name: 'Fluopyram', type: 'Pesticide', ingredient: 'Fluopyram', waiting: 'As directed', icon: 'flask-round-bottom' as IconName },
+    { name: 'Glufosinate ammonium', type: 'Pesticide', ingredient: 'Glufosinate ammonium', waiting: 'As directed', icon: 'flask-round-bottom' as IconName },
+    { name: 'Glyphosate', type: 'Pesticide', ingredient: 'Glyphosate', waiting: 'As directed', icon: 'flask-round-bottom' as IconName },
+    { name: 'Hexaconazole', type: 'Pesticide', ingredient: 'Hexaconazole', waiting: 'As directed', icon: 'flask-round-bottom' as IconName },
+    { name: 'MCPA', type: 'Pesticide', ingredient: 'MCPA', waiting: 'As directed', icon: 'flask-round-bottom' as IconName },
+    { name: 'Methyl Isothiocyanate/Metam', type: 'Pesticide', ingredient: 'Methyl Isothiocyanate/Metam', waiting: 'As directed', icon: 'flask-round-bottom' as IconName },
+    { name: 'Oxyfluorfen', type: 'Pesticide', ingredient: 'Oxyfluorfen', waiting: 'As directed', icon: 'flask-round-bottom' as IconName },
+    { name: 'Propiconazole', type: 'Pesticide', ingredient: 'Propiconazole', waiting: 'As directed', icon: 'flask-round-bottom' as IconName },
+    { name: 'Sulphur', type: 'Pesticide', ingredient: 'Sulphur', waiting: 'As directed', icon: 'flask-round-bottom' as IconName },
+    { name: 'Tebuconazole', type: 'Pesticide', ingredient: 'Tebuconazole', waiting: 'As directed', icon: 'flask-round-bottom' as IconName },
   ];
   const visibleChemicals = chemicals.filter((chemical) => {
     const matchesFilter = filter === 'All' || chemical.type === filter;
