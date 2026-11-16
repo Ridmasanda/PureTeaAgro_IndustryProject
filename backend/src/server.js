@@ -3,7 +3,7 @@ require('dotenv').config();
 const dns = require('dns');
 const express = require('express');
 const cors = require('cors');
-const connectDB = require('./config/db');
+const { connectDB } = require('./config/db');
 const authRoutes = require('./routes/auth');
 
 const dnsServers = (process.env.DNS_SERVERS || '8.8.8.8,1.1.1.1')
@@ -53,7 +53,7 @@ async function startServer() {
       console.log(`API server running on port ${port}`);
     });
   } catch (error) {
-    console.error('Unable to connect to MongoDB:', error.message);
+    console.error('Unable to connect to Supabase PostgreSQL:', error.message);
     process.exit(1);
   }
 }

@@ -1,14 +1,20 @@
-const mongoose = require('mongoose');
+const { Pool } = require('pg');
 
-async function connectDB() {
-  const mongoUri = process.env.MONGODB_URI;
+const databaseUrl = process.env.DATABASE_URL;
 
-  if (!mongoUri) {
-    throw new Error('MONGODB_URI is not configured in the environment.');
-  }
-
-  await mongoose.connect(mongoUri);
-  console.log('MongoDB connected successfully');
+if (!databaseUrl) {
+  throw new Error('DATABASE_URL is not configured in the environment.');
 }
 
-module.exports = connectDB;
+const pool = new Pool({
+  connectionString: databaseUrl,
+  ssl: { rejectUnauthorized: false },
+});
+
+async function connectDB() {
+  const client = await pool.connect();
+  client.release();
+  console.log('Supabase PostgreSQL connected successfully');
+}
+
+module.exports = { connectDB, pool };

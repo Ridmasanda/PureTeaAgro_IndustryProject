@@ -2,7 +2,7 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-const User = require('../models/User');
+const { pool } = require('../config/db');
 
 const router = express.Router();
 
@@ -24,7 +24,7 @@ function createToken(user) {
 
   return jwt.sign(
     {
-      userId: user._id.toString(),
+      userId: user.id,
       role: user.role,
     },
     jwtSecret,
@@ -33,9 +33,24 @@ function createToken(user) {
 }
 
 function publicUser(user) {
-  const userData = user.toObject();
-  delete userData.passwordHash;
-  return userData;
+  const {
+    password_hash: passwordHash,
+    full_name: fullName,
+    inspector_id: inspectorId,
+    employee_id: employeeId,
+    created_at: createdAt,
+    updated_at: updatedAt,
+    ...userData
+  } = user;
+
+  return {
+    ...userData,
+    fullName,
+    inspectorId,
+    employeeId,
+    createdAt,
+    updatedAt,
+  };
 }
 
 router.post('/register', async (req, res, next) => {
@@ -78,9 +93,12 @@ router.post('/register', async (req, res, next) => {
     }
 
     const normalizedEmail = email.trim().toLowerCase();
-    const existingUser = await User.findOne({ email: normalizedEmail });
+    const existingUserResult = await pool.query(
+      'SELECT id FROM users WHERE email = $1',
+      [normalizedEmail],
+    );
 
-    if (existingUser) {
+    if (existingUserResult.rowCount > 0) {
       return res.status(409).json({
         success: false,
         message: 'An account with this email already exists.',
@@ -88,21 +106,29 @@ router.post('/register', async (req, res, next) => {
     }
 
     const passwordHash = await bcrypt.hash(password, 12);
-    const user = await User.create({
-      fullName,
-      email: normalizedEmail,
-      passwordHash,
-      role,
-      nic,
-      mobile,
-      address,
-      organization,
-      district,
-      designation,
-      inspectorId,
-      employeeId,
-      factory,
-    });
+    const userResult = await pool.query(
+      `INSERT INTO users (
+        full_name, email, password_hash, role, nic, mobile, address,
+        organization, district, designation, inspector_id, employee_id, factory
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+      RETURNING *`,
+      [
+        fullName,
+        normalizedEmail,
+        passwordHash,
+        role,
+        nic || null,
+        mobile || null,
+        address || null,
+        organization || null,
+        district || null,
+        designation || null,
+        inspectorId || null,
+        employeeId || null,
+        factory || null,
+      ],
+    );
+    const user = userResult.rows[0];
 
     const token = createToken(user);
 
@@ -113,7 +139,7 @@ router.post('/register', async (req, res, next) => {
       user: publicUser(user),
     });
   } catch (error) {
-    if (error.code === 11000) {
+    if (error.code === '23505') {
       return res.status(409).json({
         success: false,
         message: 'An account with one of these unique fields already exists.',
@@ -135,10 +161,13 @@ router.post('/login', async (req, res, next) => {
       });
     }
 
-    const user = await User.findOne({ email: email.trim().toLowerCase() })
-      .select('+passwordHash');
+    const userResult = await pool.query(
+      'SELECT * FROM users WHERE email = $1',
+      [email.trim().toLowerCase()],
+    );
+    const user = userResult.rows[0];
 
-    if (!user || !(await bcrypt.compare(password, user.passwordHash))) {
+    if (!user || !(await bcrypt.compare(password, user.password_hash))) {
       return res.status(401).json({
         success: false,
         message: 'Invalid email or password.',
